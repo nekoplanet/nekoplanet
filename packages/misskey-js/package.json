@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "misskey-js",
-	"version": "2024.3.1",
+	"version": "2024.3.1-neko",
 	"description": "Misskey SDK for JavaScript",
 	"types": "./built/dts/index.d.ts",
 	"exports": {
@@ -32,7 +32,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/misskey-dev/misskey.js.git"
+		"url": "git+https://github.com/laonmofu/nekoplanet"
 	},
 	"devDependencies": {
 		"@microsoft/api-extractor": "7.39.1",
