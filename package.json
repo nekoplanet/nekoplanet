@@ -1,10 +1,10 @@
 {
 	"name": "misskey",
-	"version": "2024.7.0",
+	"version": "2024.7.0-neko",
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/misskey-dev/misskey.git"
+		"url": "https://github.com/laonmofu/nekoplanet"
 	},
 	"packageManager": "pnpm@9.6.0",
 	"workspaces": [
