@@ -60,7 +60,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkA to="/gallery" class="link" activeClass="active"><i class="ti ti-icons icon"></i>{{ i18n.ts.gallery }}</MkA>
 			<div class="action">
 				<button class="_buttonPrimary" style="display: none;" @click="signup()">{{ i18n.ts.signup }}</button>
-				<button class="_button" @click="signin()">{{ i18n.ts.login }}</button>
+				<button class="_buttonPrimary" @click="signin()">{{ i18n.ts.login }}</button>
 			</div>
 		</div>
 	</Transition>
