@@ -80,7 +80,7 @@ onUnmounted(() => {
 				content: "" !important;
 				display: inline-block !important;
 				background-size: 42px 37px !important;
-				width: 42px; height: 37px !important;
+				width: 42px !important; height: 37px !important;
 				vertical-align: middle !important;
 				transform: scale(1.4) !important;
 			}
