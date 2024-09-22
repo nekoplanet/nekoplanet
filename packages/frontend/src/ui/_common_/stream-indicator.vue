@@ -59,4 +59,34 @@ onUnmounted(() => {
 .command {
 	margin-top: 8px;
 }
+
+._panel {
+	// 유즈 에러화면 (기본값)
+	padding-top: 8px;
+
+	.ti-alert-triangle {
+		display: inline-block;
+		&::before {
+			content: "";
+			display: inline-block;
+			background-image: url('https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp');
+			background-size: 42px 37px;
+			width: 42px; height: 37px;
+			vertical-align: middle;
+			transform: scale(1.4);
+		}
+	}
+
+	>div:nth-child(1) {
+		font-size: 0;
+		text-align: center;
+		&:after {
+			display: inline-block;
+			content: "너무 졸려요...";
+			margin-left: 100px;
+			vertical-align: middle;
+			font-size: 14px;
+		}
+	}
+}
 </style>
