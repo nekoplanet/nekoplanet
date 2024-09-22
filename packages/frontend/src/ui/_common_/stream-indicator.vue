@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div v-if="hasDisconnected && defaultStore.state.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
-	<div class="_mk_reload_dialog"><i src="https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp"></i> {{ i18n.ts.disconnectedFromServer }}</div>
+	<div class="_mk_reload_dialog"><i src="https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp" class="_mk_reload_inner"></i> {{ i18n.ts.disconnectedFromServer }}</div>
 	<div :class="$style.command" class="_buttons">
 		<MkButton small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
 		<MkButton small>{{ i18n.ts.doNothing }}</MkButton>
@@ -74,7 +74,7 @@ onUnmounted(() => {
 			font-size: 14px !important;
 		}
 
-		.ti-alert-triangle {
+		._mk_reload_inner {
 			display: inline-block;
 			&::before {
 				content: "" !important;
