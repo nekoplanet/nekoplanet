@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div v-if="hasDisconnected && defaultStore.state.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
-	<div><i class="ti ti-alert-triangle"></i> {{ i18n.ts.disconnectedFromServer }}</div>
+	<div class="_mk_reload_dialog"><i class="ti ti-alert-triangle"></i> {{ i18n.ts.disconnectedFromServer }}</div>
 	<div :class="$style.command" class="_buttons">
 		<MkButton small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
 		<MkButton small>{{ i18n.ts.doNothing }}</MkButton>
@@ -61,31 +61,31 @@ onUnmounted(() => {
 }
 
 ._panel {
-	// 유즈 에러화면 (기본값)
-	padding-top: 8px;
+	// 유즈 에러화면 (!important 파티)
+	padding-top: 8px !important;
 
-	.ti-alert-triangle {
-		display: inline-block;
-		&::before {
-			content: "";
-			display: inline-block;
-			background-image: url('https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp');
-			background-size: 42px 37px;
-			width: 42px; height: 37px;
-			vertical-align: middle;
-			transform: scale(1.4);
-		}
-	}
-
-	>div:nth-child(1) {
-		font-size: 0;
-		text-align: center;
+	>div._mk_reload_dialog {
+		font-size: 0 !important;
+		text-align: center !important;
 		&:after {
+			display: inline-block !important;
+			content: "너무 졸려요..." !important;
+			margin-left: 100px !important;
+			vertical-align: middle !important;
+			font-size: 14px !important;
+		}
+
+		.ti-alert-triangle {
 			display: inline-block;
-			content: "너무 졸려요...";
-			margin-left: 100px;
-			vertical-align: middle;
-			font-size: 14px;
+			&::before {
+				content: "" !important;
+				display: inline-block !important;
+				background-image: url('https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp') !important;
+				background-size: 42px 37px !important;
+				width: 42px; height: 37px !important;
+				vertical-align: middle !important;
+				transform: scale(1.4) !important;
+			}
 		}
 	}
 }

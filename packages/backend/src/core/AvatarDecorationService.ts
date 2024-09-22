@@ -151,7 +151,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			return;
 		}
 
-		const instanceHost = instance?.host;
+		const instanceHost = instance.host;
 		const decorationApiUrl = `https://${instanceHost}/api/get-avatar-decorations`;
 		const allRes = await this.httpRequestService.send(decorationApiUrl, {
 			method: 'POST',
@@ -163,8 +163,8 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		const updates = {} as Partial<MiUser>;
 		updates.avatarDecorations = [];
 		for (const avatarDecoration of userAvatarDecorations) {
-			let name;
-			let description;
+			let name: string;
+			let description: string;
 			const avatarDecorationId = avatarDecoration.id;
 			for (const decoration of allDecorations) {
 				if (decoration.id === avatarDecorationId) {
@@ -178,8 +178,8 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 				remoteId: avatarDecorationId,
 			});
 			const decorationData = {
-				name: name,
-				description: description,
+				name: name!,
+				description: description!,
 				url: this.getProxiedUrl(avatarDecoration.url as string, 'static'),
 				remoteId: avatarDecorationId,
 				host: userHost,
