@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
+
 @font-face {
 	font-family: 'Omyu Pretty';
 	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
@@ -50,7 +52,11 @@ html {
 	accent-color: var(--accent);
 	overflow: auto;
 	overflow-wrap: break-word;
-	font-family: 'Omyu Pretty', 'Hiragino Maru Gothic Pro', "BIZ UDGothic", Roboto, HelveticaNeue, Arial, sans-serif;
+	font-family:
+    'Omyu Pretty', 'M PLUS Rounded 1c', /* custom (neko) */
+    'Hiragino Maru Gothic Pro', "BIZ UDGothic", /* jp fallback (upstream) */
+    Roboto, HelveticaNeue, Arial, /* html fallback (upstream) */
+    sans-serif; /* defaults to */
 	font-size: 14px;
 	line-height: 1.35;
 	text-size-adjust: 100%;
