@@ -9,9 +9,12 @@
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
 
 @font-face {
-	font-family: 'Omyu Pretty';
-	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
-	font-weight: normal; font-style: normal;
+    // Override
+    font-family: 'M PLUS Rounded 1c';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+20-7E, U+AC00-D7A3, U+4E00-9FAF;
 }
 
 :root {
@@ -53,10 +56,10 @@ html {
 	overflow: auto;
 	overflow-wrap: break-word;
 	font-family:
-    'Omyu Pretty', 'M PLUS Rounded 1c', /* custom (neko) */
-    'Hiragino Maru Gothic Pro', "BIZ UDGothic", /* jp fallback (upstream) */
-    Roboto, HelveticaNeue, Arial, /* html fallback (upstream) */
-    sans-serif; /* defaults to */
+    'M PLUS Rounded 1c', // custom (neko)
+    'Hiragino Maru Gothic Pro', "BIZ UDGothic", // jp fallback (upstream)
+    Roboto, HelveticaNeue, Arial, // html fallback (upstream)
+    sans-serif; // defaults to
 	font-size: 14px;
 	line-height: 1.35;
 	text-size-adjust: 100%;
