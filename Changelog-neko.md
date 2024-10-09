@@ -20,6 +20,10 @@
 (cherry-pick from yunochi#1 and 7dc3d230dda0f1ccac7e82e64c0cf4848994e1fc)
 - Style: 기본 폰트 및 스킨셋 변경
 - Feat (locale): 어딘가에 묻혀 있던 로케일 추가
+- 각종 디펜던시 업데이트 및 수정
+
+### Backend
+- 최신 nsfwjs의 import 오류 대응
 
 ### Frontend
 - Feat: "다른 계정 추가" 버튼 아래에 "새 계정 추가" 버튼이 살아 있어서 지웠습니다
