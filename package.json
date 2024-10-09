@@ -71,13 +71,13 @@
 		"glob": "11.0.0"
 	},
 	"devDependencies": {
-		"@misskey-dev/eslint-plugin": "2.0.3",
+		"@misskey-dev/eslint-plugin": "github:nekoplanet/eslint-plugin-misskey",
 		"@types/node": "20.14.12",
 		"@typescript-eslint/eslint-plugin": "8.7.0",
 		"@typescript-eslint/parser": "8.7.0",
 		"cross-env": "7.0.3",
 		"cypress": "13.14.2",
-		"eslint": "9.8.0",
+		"eslint": "^9.10",
 		"globals": "15.9.0",
 		"ncp": "2.0.0",
 		"start-server-and-test": "2.0.8"

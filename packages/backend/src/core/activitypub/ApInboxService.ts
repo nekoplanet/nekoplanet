@@ -777,9 +777,6 @@ export class ApInboxService {
 		} else if (getApType(object) === 'Question') {
 			await this.apQuestionService.updateQuestion(object, resolver).catch(err => console.error(err));
 			return 'ok: Question updated';
-		} else if (getApType(object) === 'Note') {
-			await this.updateNote(resolver, actor, object, false, activity);
-			return 'ok: Note updated';
 		} else if (isPost(object) && object.additionalCc) {
 			const uri = getApId(object);
 			const unlock = await this.appLockService.getApLock(uri);
