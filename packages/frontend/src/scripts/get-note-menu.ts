@@ -181,6 +181,7 @@ export async function getNoteMenu(props: {
 	currentClip?: Misskey.entities.Clip;
 }) {
 	const appearNote = getAppearNote(props.note);
+	/* // appearNote should not be (null | undefined) but it treats to be
 	if (!appearNote) return {
 		menu: [] as MenuItem[],
 		cleanup: () => {
@@ -190,6 +191,7 @@ export async function getNoteMenu(props: {
 			}
 		},
 	};
+	*/
 
 	const cleanups = [] as (() => void)[];
 
