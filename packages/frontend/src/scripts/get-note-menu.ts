@@ -5,19 +5,19 @@
 
 import { defineAsyncComponent, Ref, ShallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
+import { url } from '@@/js/config.js';
 import { claimAchievement } from './achievements.js';
+import type { MenuItem } from '@/types/menu.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
-import { url } from '@@/js/config.js';
 import { defaultStore, noteActions } from '@/store.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { getUserMenu } from '@/scripts/get-user-menu.js';
 import { clipsCache, favoritedChannelsCache } from '@/cache.js';
-import type { MenuItem } from '@/types/menu.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { isSupportShare } from '@/scripts/navigator.js';
 import { getAppearNote } from '@/scripts/get-appear-note.js';
@@ -37,7 +37,6 @@ export async function getNoteClipMenu(props: {
 	}
 
 	const appearNote = getAppearNote(props.note);
-	if (!appearNote) return [];
 
 	const clips = await clipsCache.fetch();
 	const menu: MenuItem[] = [...clips.map(clip => ({
@@ -173,7 +172,7 @@ function getNoteEmbedCodeMenu(note: Misskey.entities.Note, text: string): MenuIt
 	};
 }
 
-export async function getNoteMenu(props: {
+export function getNoteMenu(props: {
 	note: Misskey.entities.Note;
 	translation: Ref<Misskey.entities.NotesTranslateResponse | null>;
 	translating: Ref<boolean>;
@@ -181,22 +180,14 @@ export async function getNoteMenu(props: {
 	currentClip?: Misskey.entities.Clip;
 }) {
 	const appearNote = getAppearNote(props.note);
-	/* // appearNote should not be (null | undefined) but it treats to be
-	if (!appearNote) return {
-		menu: [] as MenuItem[],
-		cleanup: () => {
-			if (_DEV_) console.log('note menu cleanup', cleanups);
-			for (const cl of cleanups) {
-				cl();
-			}
-		},
-	};
-	*/
 
 	const cleanups = [] as (() => void)[];
 
+	function edit(): void {
+		os.post({ initialNote: appearNote, renote: appearNote.renote, reply: appearNote.reply, channel: appearNote.channel, updateMode: true });
+	}
+
 	function del(): void {
-		if (!appearNote) return;
 		os.confirm({
 			type: 'warning',
 			text: i18n.ts.noteDeleteConfirm,
@@ -214,7 +205,6 @@ export async function getNoteMenu(props: {
 	}
 
 	function delEdit(): void {
-		if (!appearNote) return;
 		os.confirm({
 			type: 'warning',
 			text: i18n.ts.deleteAndEditConfirm,
@@ -233,19 +223,7 @@ export async function getNoteMenu(props: {
 		});
 	}
 
-	function edit(): void {
-		if (!appearNote) return;
-		os.confirm({
-			type: 'warning',
-			text: i18n.ts.editConfirm,
-		}).then(({ canceled }) => {
-			if (canceled) return;
-			os.post({ initialNote: appearNote, renote: appearNote.renote, reply: appearNote.reply, channel: appearNote.channel, editMode: true });
-		});
-	}
-
 	function toggleFavorite(favorite: boolean): void {
-		if (!appearNote) return;
 		claimAchievement('noteFavorited1');
 		os.apiWithDialog(favorite ? 'notes/favorites/create' : 'notes/favorites/delete', {
 			noteId: appearNote.id,
@@ -253,57 +231,41 @@ export async function getNoteMenu(props: {
 	}
 
 	function toggleThreadMute(mute: boolean): void {
-		if (!appearNote) return;
 		os.apiWithDialog(mute ? 'notes/thread-muting/create' : 'notes/thread-muting/delete', {
 			noteId: appearNote.id,
 		});
 	}
 
 	function copyContent(): void {
-		if (!appearNote) return;
 		copyToClipboard(appearNote.text);
 		os.success();
 	}
 
 	function copyLink(): void {
-		if (!appearNote) return;
 		copyToClipboard(`${url}/notes/${appearNote.id}`);
 		os.success();
 	}
 
 	function togglePin(pin: boolean): void {
-		if (!appearNote) return;
 		os.apiWithDialog(pin ? 'i/pin' : 'i/unpin', {
 			noteId: appearNote.id,
-		}).then(
-			(res) => {
-				if (res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
-					os.alert({
-						type: 'error',
-						text: i18n.ts.pinLimitExceeded,
-					});
-				}
-			},
-			(res) => {
-				if (res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
-					os.alert({
-						type: 'error',
-						text: i18n.ts.pinLimitExceeded,
-					});
-				}
+		}, undefined, null, res => {
+			if (res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
+				os.alert({
+					type: 'error',
+					text: i18n.ts.pinLimitExceeded,
+				});
 			}
-		);
+		});
 	}
 
 	async function unclip(): Promise<void> {
-		if (!appearNote) return;
 		if (!props.currentClip) return;
 		os.apiWithDialog('clips/remove-note', { clipId: props.currentClip.id, noteId: appearNote.id });
 		props.isDeleted.value = true;
 	}
 
 	async function promote(): Promise<void> {
-		if (!appearNote) return;
 		const { canceled, result: days } = await os.inputNumber({
 			title: i18n.ts.numberOfDays,
 		});
@@ -317,7 +279,6 @@ export async function getNoteMenu(props: {
 	}
 
 	function share(): void {
-		if (!appearNote) return;
 		navigator.share({
 			title: i18n.tsx.noteOf({ user: appearNote.user.name ?? appearNote.user.username }),
 			text: appearNote.text ?? '',
@@ -326,12 +287,10 @@ export async function getNoteMenu(props: {
 	}
 
 	function openDetail(): void {
-		if (!appearNote) return;
 		os.pageWindow(`/notes/${appearNote.id}`);
 	}
 
 	async function translate(): Promise<void> {
-		if (!appearNote) return;
 		if (props.translation.value != null) return;
 		props.translating.value = true;
 		const res = await misskeyApi('notes/translate', {
@@ -357,65 +316,7 @@ export async function getNoteMenu(props: {
 				action: unclip,
 			}, { type: 'divider' });
 		}
-		const channel = await misskeyApi('channels/show', { channelId: appearNote.channel!.id });
 
-		if (channel.pinnedNoteIds.includes(appearNote.id)) {
-			menuItems.push({
-				icon: 'ti ti-pinned-off',
-				text: i18n.ts.unpin,
-				action: () => os.apiWithDialog('channels/update', {
-					channelId: appearNote.channel!.id,
-					pinnedNoteIds: channel.pinnedNoteIds.filter(id => id !== appearNote.id),
-				}),
-			});
-		} else {
-			menuItems.push({
-				icon: 'ti ti-pin',
-				text: i18n.ts.pin,
-				action: () => os.apiWithDialog('channels/update', {
-					channelId: appearNote.channel!.id,
-					pinnedNoteIds: [...channel.pinnedNoteIds, appearNote.id],
-				}),
-			});
-		}
-
-		if (appearNote.userId === $i.id || $i.isModerator || $i.isAdmin) {
-			menuItems.push({ type: 'divider' });
-			if (appearNote.userId === $i.id) {
-				async function iIsEditableNote(): Promise<boolean> {
-					if (!$i) return false;
-					let editable = false;
-					const roleList = await misskeyApi('roles/list');
-					$i.roles.find((role) => {
-						const roleFound = roleList.find((member) => member.id === role.id);
-						if ((roleFound && (roleFound.policies as Partial<Misskey.entities.RolePolicies>).canEditNote) ?? false) {
-							editable = true;
-						}
-					});
-
-					return new Promise(() => editable);
-				}
-
-				if (await iIsEditableNote()) {
-					menuItems.push({
-						icon: 'ti ti-edit',
-						text: i18n.ts.edit,
-						action: edit,
-					});
-				}
-				menuItems.push({
-					icon: 'ti ti-edit',
-					text: i18n.ts.deleteAndEdit,
-					action: delEdit,
-				});
-			}
-			menuItems.push({
-				icon: 'ti ti-trash',
-				text: i18n.ts.delete,
-				danger: true,
-				action: del,
-			});
-		}
 		menuItems.push({
 			icon: 'ti ti-info-circle',
 			text: i18n.ts.details,
@@ -560,6 +461,13 @@ export async function getNoteMenu(props: {
 					action: delEdit,
 				});
 			}
+			if (appearNote.userId === $i.id && $i.policies.canEditNote) {
+				menuItems.push({
+					icon: 'ti ti-edit',
+					text: i18n.ts.edit,
+					action: edit,
+				});
+			}
 			menuItems.push({
 				icon: 'ti ti-trash',
 				text: i18n.ts.delete,
@@ -643,7 +551,6 @@ export function getRenoteMenu(props: {
 	mock?: boolean;
 }) {
 	const appearNote = getAppearNote(props.note);
-	if (!appearNote) return { menu: [] as MenuItem[] };
 
 	const channelRenoteItems: MenuItem[] = [];
 	const normalRenoteItems: MenuItem[] = [];
