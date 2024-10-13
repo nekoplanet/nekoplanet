@@ -249,7 +249,7 @@ export function getNoteMenu(props: {
 	function togglePin(pin: boolean): void {
 		os.apiWithDialog(pin ? 'i/pin' : 'i/unpin', {
 			noteId: appearNote.id,
-		}, undefined, null, res => {
+		}).then((res: (Partial<Misskey.entities.MeDetailed> | Misskey.entities.Error['error'])) => {
 			if (res.id === '72dab508-c64d-498f-8740-a8eec1ba385a') {
 				os.alert({
 					type: 'error',
