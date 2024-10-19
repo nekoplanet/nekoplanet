@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="$style.items">
 			<div>
 				<div :class="$style.label">{{ i18n.ts.createdAt }}</div>
-				<div><MkTime :time="user.createdAt" mode="absolute"/></div>
+				<div><MkTime :time="user.updatedAt" mode="absolute"/></div>
 			</div>
 			<div v-if="email">
 				<div :class="$style.label">{{ i18n.ts.emailAddress }}</div>
@@ -52,7 +52,7 @@ function getReason() {
 		userId: props.user.id,
 	}).then(info => {
 		reason.value = info.signupReason;
-		email.value = info.email;
+		email.value = info.email ?? '';
 	});
 }
 

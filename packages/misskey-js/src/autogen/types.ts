@@ -635,9 +635,10 @@ export type paths = {
      * admin/approve-user
      * @description No description provided.
      *
+     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
      * **Credential required**: *Yes* / **Permission**: *write:admin:approve-account*
      */
-    post: operations['admin/approve-user'];
+    post: operations['admin___approve-user'];
   };
   '/admin/unsuspend-user': {
     /**
@@ -4966,6 +4967,8 @@ export type components = {
       defaultLightTheme: string | null;
       disableRegistration: boolean;
       emailRequiredForSignup: boolean;
+      /** @default false */
+      approvalRequiredForSignup: boolean;
       enableHcaptcha: boolean;
       hcaptchaSiteKey: string | null;
       enableMcaptcha: boolean;
@@ -9291,9 +9294,10 @@ export type operations = {
    * admin/approve-user
    * @description No description provided.
    *
+   * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
    * **Credential required**: *Yes* / **Permission**: *write:admin:approve-account*
    */
-  'admin__approve-user': {
+  'admin___approve-user': {
     requestBody: {
       content: {
         'application/json': {

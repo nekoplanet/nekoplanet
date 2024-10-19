@@ -283,7 +283,7 @@ function createFetcher() {
 		moderationNote.value = info.value.moderationNote;
 
 		watch(moderationNote, async () => {
-			await misskeyApi('admin/update-user-note', { userId: user.value.id, text: moderationNote.value });
+			await misskeyApi('admin/update-user-note', { userId: user.value!.id, text: moderationNote.value });
 			await refreshUser();
 		});
 	});
@@ -294,7 +294,7 @@ function refreshUser() {
 }
 
 async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
+	await os.apiWithDialog('federation/update-remote-user', { userId: user.value!.id });
 	refreshUser();
 }
 
@@ -307,7 +307,7 @@ async function resetPassword() {
 		return;
 	} else {
 		const { password } = await misskeyApi('admin/reset-password', {
-			userId: user.value.id,
+			userId: user.value!.id,
 		});
 		os.alert({
 			type: 'success',
@@ -324,7 +324,7 @@ async function toggleSuspend(v) {
 	if (confirm.canceled) {
 		suspended.value = !v;
 	} else {
-		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value.id });
+		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value!.id });
 		await refreshUser();
 	}
 }
@@ -336,7 +336,7 @@ async function unsetUserAvatar() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/unset-user-avatar', { userId: user.value.id });
+		await misskeyApi('admin/unset-user-avatar', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -355,7 +355,7 @@ async function unsetUserBanner() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/unset-user-banner', { userId: user.value.id });
+		await misskeyApi('admin/unset-user-banner', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -374,7 +374,7 @@ async function deleteAllFiles() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value.id });
+		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -443,7 +443,7 @@ async function assignRole() {
 		: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
 		: null;
 
-	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value.id, expiresAt });
+	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value!.id, expiresAt });
 	refreshUser();
 }
 
@@ -453,7 +453,7 @@ async function unassignRole(role, ev) {
 		icon: 'ti ti-x',
 		danger: true,
 		action: async () => {
-			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value.id });
+			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value!.id });
 			refreshUser();
 		},
 	}], ev.currentTarget ?? ev.target);
@@ -492,7 +492,7 @@ watch(() => props.userId, () => {
 
 watch(user, () => {
 	misskeyApi('ap/get', {
-		uri: user.value.uri ?? `${url}/users/${user.value.id}`,
+		uri: user.value?.uri ?? `${url}/users/${user.value!.id}`,
 	}).then(res => {
 		ap.value = res;
 	});

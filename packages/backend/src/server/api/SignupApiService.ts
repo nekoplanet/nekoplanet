@@ -18,10 +18,10 @@ import { MiLocalUser } from '@/models/User.js';
 import { FastifyReplyError } from '@/misc/fastify-reply-error.js';
 import { bindThis } from '@/decorators.js';
 import { L_CHARS, secureRndstr } from '@/misc/secure-rndstr.js';
-import { SigninService } from './SigninService.js';
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import instance from './endpoints/charts/instance.js';
 import { RoleService } from '@/core/RoleService.js';
+import { SigninService } from './SigninService.js';
+import instance from './endpoints/charts/instance.js';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 
 @Injectable()
 export class SignupApiService {
@@ -125,7 +125,7 @@ export class SignupApiService {
 			}
 		}
 
-		if (instance.approvalRequiredForSignup) {
+		if (this.meta.approvalRequiredForSignup) {
 			if (reason == null || typeof reason !== 'string') {
 				reply.code(400);
 				return;
@@ -218,7 +218,7 @@ export class SignupApiService {
 
 			reply.code(204);
 			return;
-		} else if (instance.approvalRequiredForSignup) {
+		} else if (this.meta.approvalRequiredForSignup) {
 			const { account } = await this.signupService.signup({
 				username, password, host, reason,
 			});
@@ -286,8 +286,6 @@ export class SignupApiService {
 
 		const code = body['code'];
 
-		const instance = await this.metaService.fetch(true);
-
 		try {
 			const pendingUser = await this.userPendingsRepository.findOneByOrFail({ code });
 
@@ -322,7 +320,7 @@ export class SignupApiService {
 				});
 			}
 
-			if (instance.approvalRequiredForSignup) {
+			if (this.meta.approvalRequiredForSignup) {
 				if (pendingUser.email) {
 					this.emailService.sendEmail(pendingUser.email, 'Approval pending',
 						'Congratulations! Your account is now pending approval. You will get notified when you have been accepted.',
