@@ -62,6 +62,11 @@ export const packedUserLiteSchema = {
 			example: 'misskey.example.com',
 			description: 'The local host is represented with `null`.',
 		},
+		signupReason: {
+			type: 'string',
+			nullable: true, optional: true,
+			description: 'If signup approval is required, write here why you are signing in',
+		},
 		approved: {
 			type: 'boolean',
 			nullable: false, default: false,

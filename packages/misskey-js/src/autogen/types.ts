@@ -3722,6 +3722,8 @@ export type components = {
        * @example misskey.example.com
        */
       host: string | null;
+      /** @description If signup approval is required, write here why you are signing in */
+      signupReason?: string | null;
       /**
        * @description User whom registeration is approved or not
        * @default false
