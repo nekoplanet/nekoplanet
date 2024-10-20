@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkPagination ref="paginationComponent" :pagination="pagination">
 					<template #default="{ items }">
 						<div class="_gaps_s">
-							<MkApprovalUser v-for="item in items" :key="item.id" :user="(item as any)" :onDeleted="deleted"/>
+							<MkApprovalUser v-for="item in items" :key="item.id" :user="item" :onDeleted="deleted"/>
 						</div>
 					</template>
 				</MkPagination>

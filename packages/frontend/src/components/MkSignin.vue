@@ -235,7 +235,7 @@ function onSubmit(): void {
 	}
 }
 
-function loginFailed(err: any): void {
+function loginFailed(err: Misskey.entities.Error): void {
 	switch (err.id) {
 		case '6cc579cc-885d-43d8-95c2-b8c7fc963280': {
 			os.alert({

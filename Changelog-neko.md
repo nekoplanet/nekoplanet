@@ -1,8 +1,8 @@
-## Unreleased
+## Unreleased (2024.9.0+neko.rc-2)
 
 ### General
-- Feat: ユーザー登録を承認制にできるように (cherry-pick from https://git.joinsharkey.org/Sharkey/Sharkey)
-- Fix: リストライムラインの「リノートを表示」が正しく機能しない問題を修正
+- Feat: 사용자 등록을 승인제로 할 수 있도록
+(pull from 0e2e4c353f6d2fd2cc650007ec2f6a876acde8f7)
 
 ### Frontend
 

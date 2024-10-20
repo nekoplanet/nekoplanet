@@ -3722,6 +3722,11 @@ export type components = {
        * @example misskey.example.com
        */
       host: string | null;
+      /**
+       * @description User whom registeration is approved or not
+       * @default false
+       */
+      approved: boolean;
       /** Format: url */
       avatarUrl: string | null;
       avatarBlurhash: string | null;

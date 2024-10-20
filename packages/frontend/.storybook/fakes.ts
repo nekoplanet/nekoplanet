@@ -184,6 +184,7 @@ export function federationInstance(): entities.FederationInstance {
 		themeColor: '',
 		infoUpdatedAt: '',
 		latestRequestReceivedAt: '',
+		isMediaSilenced: false,
 	};
 }
 
