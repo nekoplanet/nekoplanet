@@ -126,6 +126,7 @@ async function enter(element: Element) {
 	const elementWidth = el.getBoundingClientRect().width;
 	el.style.width = '0';
 	el.style.paddingLeft = '0';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetWidth; // force reflow
 	el.style.width = elementWidth + 'px';
 	el.style.paddingLeft = '';
@@ -145,6 +146,7 @@ async function leave(element: Element) {
 	const elementWidth = el.getBoundingClientRect().width;
 	el.style.width = elementWidth + 'px';
 	el.style.paddingLeft = '';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetWidth; // force reflow
 	el.style.width = '0';
 	el.style.paddingLeft = '0';

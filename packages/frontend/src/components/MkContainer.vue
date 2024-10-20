@@ -67,6 +67,7 @@ const omitted = ref(false);
 function enter(el) {
 	const elementHeight = el.getBoundingClientRect().height;
 	el.style.height = 0;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetHeight; // reflow
 	el.style.height = Math.min(elementHeight, props.maxHeight ?? Infinity) + 'px';
 }
@@ -78,6 +79,7 @@ function afterEnter(el) {
 function leave(el) {
 	const elementHeight = el.getBoundingClientRect().height;
 	el.style.height = elementHeight + 'px';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetHeight; // reflow
 	el.style.height = 0;
 }

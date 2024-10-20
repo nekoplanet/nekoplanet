@@ -187,6 +187,8 @@ export type Config = {
 	perUserNotificationsMaxCount: number;
 	deactivateAntennaThreshold: number;
 	pidFile: string;
+
+	approvalRequiredForSignup: boolean;
 };
 
 const _filename = fileURLToPath(import.meta.url);

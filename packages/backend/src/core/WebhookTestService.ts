@@ -76,6 +76,8 @@ function generateDummyUser(override?: Partial<MiUser>): MiUser {
 		uri: null,
 		followersUri: null,
 		token: null,
+		approved: override?.approved ?? false,
+		signupReason: override?.signupReason ?? null,
 		...override,
 	};
 }
@@ -189,6 +191,7 @@ function toPackedUserLite(user: MiUser, override?: Packed<'UserLite'>): Packed<'
 		emojis: user.emojis,
 		onlineStatus: 'active',
 		badgeRoles: [],
+		approved: override?.approved ?? false,
 		...override,
 	};
 }

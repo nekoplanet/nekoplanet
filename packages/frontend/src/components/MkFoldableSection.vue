@@ -59,6 +59,7 @@ function enter(element: Element) {
 	const el = element as HTMLElement;
 	const elementHeight = el.getBoundingClientRect().height;
 	el.style.height = '0';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetHeight; // reflow
 	el.style.height = elementHeight + 'px';
 }
@@ -72,6 +73,7 @@ function leave(element: Element) {
 	const el = element as HTMLElement;
 	const elementHeight = el.getBoundingClientRect().height;
 	el.style.height = elementHeight + 'px';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetHeight; // reflow
 	el.style.height = '0';
 }
