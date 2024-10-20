@@ -22,3 +22,4 @@ https://github.com/misskey-dev/misskey/blob/develop/CONTRIBUTING.md
 - [ ] (If needed) Add story of storybook
 - [ ] (If needed) Update CHANGELOG.md
 - [ ] (If possible) Add tests
+- [ ] (If possible) Publish docker image

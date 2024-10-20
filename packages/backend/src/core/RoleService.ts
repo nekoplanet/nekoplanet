@@ -8,6 +8,7 @@ import * as Redis from 'ioredis';
 import { In } from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
 import type {
+	MiMeta,
 	MiRole,
 	MiRoleAssignment,
 	RoleAssignmentsRepository,
@@ -18,7 +19,6 @@ import { MemoryKVCache, MemorySingleCache } from '@/misc/cache.js';
 import type { MiUser } from '@/models/User.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
-import { MetaService } from '@/core/MetaService.js';
 import { CacheService } from '@/core/CacheService.js';
 import type { RoleCondFormulaValue } from '@/models/Role.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
@@ -35,6 +35,14 @@ export type RolePolicies = {
 	gtlAvailable: boolean;
 	ltlAvailable: boolean;
 	canPublicNote: boolean;
+	canEditNote: boolean;
+	canInitiateConversation: boolean;
+	canCreateContent: boolean;
+	canUpdateContent: boolean;
+	canDeleteContent: boolean;
+	canPurgeAccount: boolean;
+	canUpdateAvatar: boolean;
+	canUpdateBanner: boolean;
 	mentionLimit: number;
 	canInvite: boolean;
 	inviteLimit: number;
@@ -58,12 +66,25 @@ export type RolePolicies = {
 	userEachUserListsLimit: number;
 	rateLimitFactor: number;
 	avatarDecorationLimit: number;
+	canImportAntennas: boolean;
+	canImportBlocking: boolean;
+	canImportFollowing: boolean;
+	canImportMuting: boolean;
+	canImportUserLists: boolean;
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
 	gtlAvailable: true,
 	ltlAvailable: true,
 	canPublicNote: true,
+	canEditNote: true,
+	canInitiateConversation: true,
+	canCreateContent: true,
+	canUpdateContent: true,
+	canDeleteContent: true,
+	canPurgeAccount: true,
+	canUpdateAvatar: true,
+	canUpdateBanner: true,
 	mentionLimit: 20,
 	canInvite: false,
 	inviteLimit: 0,
@@ -87,6 +108,11 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	userEachUserListsLimit: 50,
 	rateLimitFactor: 1,
 	avatarDecorationLimit: 1,
+	canImportAntennas: true,
+	canImportBlocking: true,
+	canImportFollowing: true,
+	canImportMuting: true,
+	canImportUserLists: true,
 };
 
 @Injectable()
@@ -101,8 +127,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 	constructor(
 		private moduleRef: ModuleRef,
 
-		@Inject(DI.redis)
-		private redisClient: Redis.Redis,
+		@Inject(DI.meta)
+		private meta: MiMeta,
 
 		@Inject(DI.redisForTimelines)
 		private redisForTimelines: Redis.Redis,
@@ -119,7 +145,6 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		@Inject(DI.roleAssignmentsRepository)
 		private roleAssignmentsRepository: RoleAssignmentsRepository,
 
-		private metaService: MetaService,
 		private cacheService: CacheService,
 		private userEntityService: UserEntityService,
 		private globalEventService: GlobalEventService,
@@ -127,10 +152,8 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 		private moderationLogService: ModerationLogService,
 		private fanoutTimelineService: FanoutTimelineService,
 	) {
-		//this.onMessage = this.onMessage.bind(this);
-
-		this.rolesCache = new MemorySingleCache<MiRole[]>(1000 * 60 * 60 * 1);
-		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 60 * 1);
+		this.rolesCache = new MemorySingleCache<MiRole[]>(1000 * 60 * 60); // 1h
+		this.roleAssignmentByUserIdCache = new MemoryKVCache<MiRoleAssignment[]>(1000 * 60 * 5); // 5m
 
 		this.redisForSub.on('message', this.onMessage);
 	}
@@ -341,8 +364,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 
 	@bindThis
 	public async getUserPolicies(userId: MiUser['id'] | null): Promise<RolePolicies> {
-		const meta = await this.metaService.fetch();
-		const basePolicies = { ...DEFAULT_POLICIES, ...meta.policies };
+		const basePolicies = { ...DEFAULT_POLICIES, ...this.meta.policies };
 
 		if (userId == null) return basePolicies;
 
@@ -366,6 +388,14 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			gtlAvailable: calc('gtlAvailable', vs => vs.some(v => v === true)),
 			ltlAvailable: calc('ltlAvailable', vs => vs.some(v => v === true)),
 			canPublicNote: calc('canPublicNote', vs => vs.some(v => v === true)),
+			canEditNote: calc('canEditNote', vs => vs.some(v => v === true)),
+			canInitiateConversation: calc('canInitiateConversation', vs => vs.some(v => v === true)),
+			canCreateContent: calc('canCreateContent', vs => vs.some(v => v === true)),
+			canUpdateContent: calc('canUpdateContent', vs => vs.some(v => v === true)),
+			canDeleteContent: calc('canDeleteContent', vs => vs.some(v => v === true)),
+			canPurgeAccount: calc('canPurgeAccount', vs => vs.some(v => v === true)),
+			canUpdateAvatar: calc('canUpdateAvatar', vs => vs.some(v => v === true)),
+			canUpdateBanner: calc('canUpdateBanner', vs => vs.some(v => v === true)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
 			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
@@ -389,6 +419,11 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			userEachUserListsLimit: calc('userEachUserListsLimit', vs => Math.max(...vs)),
 			rateLimitFactor: calc('rateLimitFactor', vs => Math.max(...vs)),
 			avatarDecorationLimit: calc('avatarDecorationLimit', vs => Math.max(...vs)),
+			canImportAntennas: calc('canImportAntennas', vs => vs.some(v => v === true)),
+			canImportBlocking: calc('canImportBlocking', vs => vs.some(v => v === true)),
+			canImportFollowing: calc('canImportFollowing', vs => vs.some(v => v === true)),
+			canImportMuting: calc('canImportMuting', vs => vs.some(v => v === true)),
+			canImportUserLists: calc('canImportUserLists', vs => vs.some(v => v === true)),
 		};
 	}
 

@@ -92,6 +92,7 @@ import * as ep___admin_systemWebhook_delete from './endpoints/admin/system-webho
 import * as ep___admin_systemWebhook_list from './endpoints/admin/system-webhook/list.js';
 import * as ep___admin_systemWebhook_show from './endpoints/admin/system-webhook/show.js';
 import * as ep___admin_systemWebhook_update from './endpoints/admin/system-webhook/update.js';
+import * as ep___admin_systemWebhook_test from './endpoints/admin/system-webhook/test.js';
 import * as ep___announcements from './endpoints/announcements.js';
 import * as ep___announcements_show from './endpoints/announcements/show.js';
 import * as ep___antennas_create from './endpoints/antennas/create.js';
@@ -258,6 +259,7 @@ import * as ep___i_webhooks_show from './endpoints/i/webhooks/show.js';
 import * as ep___i_webhooks_list from './endpoints/i/webhooks/list.js';
 import * as ep___i_webhooks_update from './endpoints/i/webhooks/update.js';
 import * as ep___i_webhooks_delete from './endpoints/i/webhooks/delete.js';
+import * as ep___i_webhooks_test from './endpoints/i/webhooks/test.js';
 import * as ep___invite_create from './endpoints/invite/create.js';
 import * as ep___invite_delete from './endpoints/invite/delete.js';
 import * as ep___invite_list from './endpoints/invite/list.js';
@@ -278,6 +280,7 @@ import * as ep___notes_children from './endpoints/notes/children.js';
 import * as ep___notes_clips from './endpoints/notes/clips.js';
 import * as ep___notes_conversation from './endpoints/notes/conversation.js';
 import * as ep___notes_create from './endpoints/notes/create.js';
+import * as ep___notes_update from './endpoints/notes/update.js';
 import * as ep___notes_delete from './endpoints/notes/delete.js';
 import * as ep___notes_favorites_create from './endpoints/notes/favorites/create.js';
 import * as ep___notes_favorites_delete from './endpoints/notes/favorites/delete.js';
@@ -475,6 +478,7 @@ const $admin_systemWebhook_delete: Provider = { provide: 'ep:admin/system-webhoo
 const $admin_systemWebhook_list: Provider = { provide: 'ep:admin/system-webhook/list', useClass: ep___admin_systemWebhook_list.default };
 const $admin_systemWebhook_show: Provider = { provide: 'ep:admin/system-webhook/show', useClass: ep___admin_systemWebhook_show.default };
 const $admin_systemWebhook_update: Provider = { provide: 'ep:admin/system-webhook/update', useClass: ep___admin_systemWebhook_update.default };
+const $admin_systemWebhook_test: Provider = { provide: 'ep:admin/system-webhook/test', useClass: ep___admin_systemWebhook_test.default };
 const $announcements: Provider = { provide: 'ep:announcements', useClass: ep___announcements.default };
 const $announcements_show: Provider = { provide: 'ep:announcements/show', useClass: ep___announcements_show.default };
 const $antennas_create: Provider = { provide: 'ep:antennas/create', useClass: ep___antennas_create.default };
@@ -641,6 +645,7 @@ const $i_webhooks_list: Provider = { provide: 'ep:i/webhooks/list', useClass: ep
 const $i_webhooks_show: Provider = { provide: 'ep:i/webhooks/show', useClass: ep___i_webhooks_show.default };
 const $i_webhooks_update: Provider = { provide: 'ep:i/webhooks/update', useClass: ep___i_webhooks_update.default };
 const $i_webhooks_delete: Provider = { provide: 'ep:i/webhooks/delete', useClass: ep___i_webhooks_delete.default };
+const $i_webhooks_test: Provider = { provide: 'ep:i/webhooks/test', useClass: ep___i_webhooks_test.default };
 const $invite_create: Provider = { provide: 'ep:invite/create', useClass: ep___invite_create.default };
 const $invite_delete: Provider = { provide: 'ep:invite/delete', useClass: ep___invite_delete.default };
 const $invite_list: Provider = { provide: 'ep:invite/list', useClass: ep___invite_list.default };
@@ -661,6 +666,7 @@ const $notes_children: Provider = { provide: 'ep:notes/children', useClass: ep__
 const $notes_clips: Provider = { provide: 'ep:notes/clips', useClass: ep___notes_clips.default };
 const $notes_conversation: Provider = { provide: 'ep:notes/conversation', useClass: ep___notes_conversation.default };
 const $notes_create: Provider = { provide: 'ep:notes/create', useClass: ep___notes_create.default };
+const $notes_update: Provider = { provide: 'ep:notes/update', useClass: ep___notes_update.default };
 const $notes_delete: Provider = { provide: 'ep:notes/delete', useClass: ep___notes_delete.default };
 const $notes_favorites_create: Provider = { provide: 'ep:notes/favorites/create', useClass: ep___notes_favorites_create.default };
 const $notes_favorites_delete: Provider = { provide: 'ep:notes/favorites/delete', useClass: ep___notes_favorites_delete.default };
@@ -862,6 +868,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$admin_systemWebhook_list,
 		$admin_systemWebhook_show,
 		$admin_systemWebhook_update,
+		$admin_systemWebhook_test,
 		$announcements,
 		$announcements_show,
 		$antennas_create,
@@ -1028,6 +1035,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$i_webhooks_show,
 		$i_webhooks_update,
 		$i_webhooks_delete,
+		$i_webhooks_test,
 		$invite_create,
 		$invite_delete,
 		$invite_list,
@@ -1048,6 +1056,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$notes_clips,
 		$notes_conversation,
 		$notes_create,
+		$notes_update,
 		$notes_delete,
 		$notes_favorites_create,
 		$notes_favorites_delete,
@@ -1243,6 +1252,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$admin_systemWebhook_list,
 		$admin_systemWebhook_show,
 		$admin_systemWebhook_update,
+		$admin_systemWebhook_test,
 		$announcements,
 		$announcements_show,
 		$antennas_create,
@@ -1409,6 +1419,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$i_webhooks_show,
 		$i_webhooks_update,
 		$i_webhooks_delete,
+		$i_webhooks_test,
 		$invite_create,
 		$invite_delete,
 		$invite_list,
@@ -1429,6 +1440,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$notes_clips,
 		$notes_conversation,
 		$notes_create,
+		$notes_update,
 		$notes_delete,
 		$notes_favorites_create,
 		$notes_favorites_delete,

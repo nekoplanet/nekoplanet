@@ -94,12 +94,17 @@ defineExpose({
 
 	--root-margin: 24px;
 
+	--headerHeight: 46px;
+	--headerHeightNarrow: 42px;
+
 	@media (max-width: 500px) {
 		--root-margin: 16px;
 	}
 
-	--headerHeight: 46px;
-	--headerHeightNarrow: 42px;
+	& {
+		--headerHeight: 46px;
+		--headerHeightNarrow: 42px;
+	}
 }
 
 .header {

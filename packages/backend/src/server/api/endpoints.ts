@@ -98,6 +98,7 @@ import * as ep___admin_systemWebhook_delete from './endpoints/admin/system-webho
 import * as ep___admin_systemWebhook_list from './endpoints/admin/system-webhook/list.js';
 import * as ep___admin_systemWebhook_show from './endpoints/admin/system-webhook/show.js';
 import * as ep___admin_systemWebhook_update from './endpoints/admin/system-webhook/update.js';
+import * as ep___admin_systemWebhook_test from './endpoints/admin/system-webhook/test.js';
 import * as ep___announcements from './endpoints/announcements.js';
 import * as ep___announcements_show from './endpoints/announcements/show.js';
 import * as ep___antennas_create from './endpoints/antennas/create.js';
@@ -264,6 +265,7 @@ import * as ep___i_webhooks_show from './endpoints/i/webhooks/show.js';
 import * as ep___i_webhooks_list from './endpoints/i/webhooks/list.js';
 import * as ep___i_webhooks_update from './endpoints/i/webhooks/update.js';
 import * as ep___i_webhooks_delete from './endpoints/i/webhooks/delete.js';
+import * as ep___i_webhooks_test from './endpoints/i/webhooks/test.js';
 import * as ep___invite_create from './endpoints/invite/create.js';
 import * as ep___invite_delete from './endpoints/invite/delete.js';
 import * as ep___invite_list from './endpoints/invite/list.js';
@@ -284,6 +286,7 @@ import * as ep___notes_children from './endpoints/notes/children.js';
 import * as ep___notes_clips from './endpoints/notes/clips.js';
 import * as ep___notes_conversation from './endpoints/notes/conversation.js';
 import * as ep___notes_create from './endpoints/notes/create.js';
+import * as ep___notes_update from './endpoints/notes/update.js';
 import * as ep___notes_delete from './endpoints/notes/delete.js';
 import * as ep___notes_favorites_create from './endpoints/notes/favorites/create.js';
 import * as ep___notes_favorites_delete from './endpoints/notes/favorites/delete.js';
@@ -479,6 +482,7 @@ const eps = [
 	['admin/system-webhook/list', ep___admin_systemWebhook_list],
 	['admin/system-webhook/show', ep___admin_systemWebhook_show],
 	['admin/system-webhook/update', ep___admin_systemWebhook_update],
+	['admin/system-webhook/test', ep___admin_systemWebhook_test],
 	['announcements', ep___announcements],
 	['announcements/show', ep___announcements_show],
 	['antennas/create', ep___antennas_create],
@@ -645,6 +649,7 @@ const eps = [
 	['i/webhooks/show', ep___i_webhooks_show],
 	['i/webhooks/update', ep___i_webhooks_update],
 	['i/webhooks/delete', ep___i_webhooks_delete],
+	['i/webhooks/test', ep___i_webhooks_test],
 	['invite/create', ep___invite_create],
 	['invite/delete', ep___invite_delete],
 	['invite/list', ep___invite_list],
@@ -665,6 +670,7 @@ const eps = [
 	['notes/clips', ep___notes_clips],
 	['notes/conversation', ep___notes_conversation],
 	['notes/create', ep___notes_create],
+	['notes/update', ep___notes_update],
 	['notes/delete', ep___notes_delete],
 	['notes/favorites/create', ep___notes_favorites_create],
 	['notes/favorites/delete', ep___notes_favorites_delete],

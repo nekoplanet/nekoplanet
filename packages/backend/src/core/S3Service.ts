@@ -10,9 +10,11 @@ import { Injectable } from '@nestjs/common';
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler';
+import { bindThis } from '@/decorators.js';
+import { DI } from '@/di-symbols.js';
+import type { Config } from '@/config.js';
 import type { MiMeta } from '@/models/Meta.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
-import { bindThis } from '@/decorators.js';
 import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 @Injectable()

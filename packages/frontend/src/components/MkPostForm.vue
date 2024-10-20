@@ -105,11 +105,11 @@ import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import insertTextAtCursor from 'insert-text-at-cursor';
 import { toASCII } from 'punycode/';
+import { host, url } from '@@/js/config.js';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkNotePreview from '@/components/MkNotePreview.vue';
 import XPostFormAttaches from '@/components/MkPostFormAttaches.vue';
 import MkPollEditor, { type PollEditorModelValue } from '@/components/MkPollEditor.vue';
-import { host, url } from '@/config.js';
 import { erase, unique } from '@/scripts/array.js';
 import { extractMentions } from '@/scripts/extract-mentions.js';
 import { formatTimeString } from '@/scripts/format-time-string.js';
@@ -152,6 +152,7 @@ const props = withDefaults(defineProps<{
 	autofocus?: boolean;
 	freezeAfterPosted?: boolean;
 	mock?: boolean;
+	editMode?: boolean;
 }>(), {
 	initialVisibleUsers: () => [],
 	autofocus: true,
@@ -245,7 +246,7 @@ const submitText = computed((): string => {
 });
 
 const textLength = computed((): number => {
-	return (text.value + imeText.value).trim().length;
+	return (text.value + imeText.value).length;
 });
 
 const maxTextLength = computed((): number => {
@@ -253,7 +254,7 @@ const maxTextLength = computed((): number => {
 });
 
 const canPost = computed((): boolean => {
-	return !props.mock && !posting.value && !posted.value &&
+	return ((!props.mock && !posting.value && !posted.value) || props.editMode) &&
 		(
 			1 <= textLength.value ||
 			1 <= files.value.length ||
@@ -695,8 +696,8 @@ function saveDraft() {
 	const draftData = JSON.parse(miLocalStorage.getItem('drafts') ?? '{}');
 
 	draftData[draftKey.value] = {
-		updatedAt: new Date(),
 		data: {
+			updatedAt: new Date(),
 			text: text.value,
 			useCw: useCw.value,
 			cw: cw.value,
@@ -707,6 +708,7 @@ function saveDraft() {
 			visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(x => x.id) : undefined,
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
+			noteId: props.editMode ? props.initialNote?.id : undefined,
 		},
 	};
 
@@ -788,7 +790,15 @@ async function post(ev?: MouseEvent) {
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
+		noteId: props.editMode ? props.initialNote?.id : undefined,
 	};
+
+	if (props.initialNote && props.editMode) {
+		postData.updatedAt = new Date();
+		postData.updatedAtHistory = props.initialNote.updatedAtHistory || [];
+		postData.updatedAtHistory.push(postData.updatedAt);
+		postData.id = props.initialNote.id;
+	}
 
 	if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {
 		const hashtags_ = hashtags.value.trim().split(' ').map(x => x.startsWith('#') ? x : '#' + x).join(' ');
@@ -824,7 +834,7 @@ async function post(ev?: MouseEvent) {
 	}
 
 	posting.value = true;
-	misskeyApi('notes/create', postData, token).then(() => {
+	misskeyApi(props.editMode ? 'notes/update' : 'notes/create', postData, token).then(() => {
 		if (props.freezeAfterPosted) {
 			posted.value = true;
 		} else {
@@ -841,13 +851,15 @@ async function post(ev?: MouseEvent) {
 			posting.value = false;
 			postAccount.value = null;
 
-			incNotesCount();
-			if (notesCount === 1) {
-				claimAchievement('notes1');
+			if (!props.editMode) {
+				incNotesCount();
+				if (notesCount === 1) {
+					claimAchievement('notes1');
+				}
 			}
 
-			const text = postData.text ?? '';
-			const lowerCase = text.toLowerCase();
+			const _text = postData.text ?? '';
+			const lowerCase = _text.toLowerCase();
 			if ((lowerCase.includes('love') || lowerCase.includes('❤')) && lowerCase.includes('misskey')) {
 				claimAchievement('iLoveMisskey');
 			}
@@ -855,23 +867,19 @@ async function post(ev?: MouseEvent) {
 				'https://youtu.be/Efrlqw8ytg4',
 				'https://www.youtube.com/watch?v=Efrlqw8ytg4',
 				'https://m.youtube.com/watch?v=Efrlqw8ytg4',
-
 				'https://youtu.be/XVCwzwxdHuA',
 				'https://www.youtube.com/watch?v=XVCwzwxdHuA',
 				'https://m.youtube.com/watch?v=XVCwzwxdHuA',
-
 				'https://open.spotify.com/track/3Cuj0mZrlLoXx9nydNi7RB',
 				'https://open.spotify.com/track/7anfcaNPQWlWCwyCHmZqNy',
 				'https://open.spotify.com/track/5Odr16TvEN4my22K9nbH7l',
 				'https://open.spotify.com/album/5bOlxyl4igOrp2DwVQxBco',
-			].some(url => text.includes(url))) {
+			].some((_url: string) => _text.includes(_url))) {
 				claimAchievement('brainDiver');
 			}
-
-			if (props.renote && (props.renote.userId === $i.id) && text.length > 0) {
+			if (props.renote && (props.renote.userId === $i.id) && _text.length > 0) {
 				claimAchievement('selfQuote');
 			}
-
 			const date = new Date();
 			const h = date.getHours();
 			const m = date.getMinutes();
@@ -1128,13 +1136,13 @@ defineExpose({
 
 	&:not(:disabled):hover {
 		> .inner {
-			background: linear-gradient(90deg, var(--X8), var(--X8));
+			background: linear-gradient(90deg, hsl(from var(--accent) h s calc(l + 5)), hsl(from var(--accent) h s calc(l + 5)));
 		}
 	}
 
 	&:not(:disabled):active {
 		> .inner {
-			background: linear-gradient(90deg, var(--X8), var(--X8));
+			background: linear-gradient(90deg, hsl(from var(--accent) h s calc(l + 5)), hsl(from var(--accent) h s calc(l + 5)));
 		}
 	}
 }
@@ -1201,6 +1209,15 @@ defineExpose({
 	min-height: 75px;
 	max-height: 150px;
 	overflow: auto;
+	background-size: auto auto;
+}
+
+html[data-color-scheme=dark] .preview {
+	background-image: repeating-linear-gradient(135deg, transparent, transparent 5px, #0004 5px, #0004 10px);
+}
+
+html[data-color-scheme=light] .preview {
+	background-image: repeating-linear-gradient(135deg, transparent, transparent 5px, #00000005 5px, #00000005 10px);
 }
 
 .targetNote {

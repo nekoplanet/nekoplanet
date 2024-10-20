@@ -119,7 +119,10 @@ export interface NoteEventTypes {
 	};
 	updated: {
 		cw: string | null;
-		text: string;
+		text: string | null;
+		files: Packed<'DriveFile'>[];
+		fileIds: string[];
+		poll: any | null;
 	};
 	reacted: {
 		reaction: string;
@@ -241,7 +244,7 @@ export interface InternalEventTypes {
 	avatarDecorationCreated: MiAvatarDecoration;
 	avatarDecorationDeleted: MiAvatarDecoration;
 	avatarDecorationUpdated: MiAvatarDecoration;
-	metaUpdated: MiMeta;
+	metaUpdated: { before?: MiMeta; after: MiMeta; };
 	followChannel: { userId: MiUser['id']; channelId: MiChannel['id']; };
 	unfollowChannel: { userId: MiUser['id']; channelId: MiChannel['id']; };
 	updateUserProfile: MiUserProfile;

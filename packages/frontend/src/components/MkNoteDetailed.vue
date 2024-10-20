@@ -68,7 +68,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</header>
 		<div :class="$style.noteContent">
 			<p v-if="appearNote.cw != null" :class="$style.cw">
-				<Mfm v-if="appearNote.cw != ''" style="margin-right: 8px;" :text="appearNote.cw" :author="appearNote.user" :nyaize="'respect'"/>
+				<Mfm
+					v-if="appearNote.cw != ''"
+					:text="appearNote.cw"
+					:author="appearNote.user"
+					:nyaize="'respect'"
+					:enableEmojiMenu="true"
+					:enableEmojiMenuReaction="true"
+				/>
 				<MkCwButton v-model="showContent" :text="appearNote.text" :renote="appearNote.renote" :files="appearNote.files" :poll="appearNote.poll"/>
 			</p>
 			<div v-show="appearNote.cw == null || showContent">
@@ -109,6 +116,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkTime :time="appearNote.createdAt" mode="detail" colored/>
 				</MkA>
 			</div>
+			<div v-if="appearNote.updatedAt" style="margin-top: 0; opacity: 0.7; font-size: 0.7em;">
+				<MkA :to="notePage(appearNote)">
+					{{ i18n.ts.updatedAt }}: <MkTime :time="appearNote.updatedAt" mode="detail"/>
+				</MkA>
+			</div>
 			<MkReactionsViewer v-if="appearNote.reactionAcceptance !== 'likeOnly'" ref="reactionsViewer" :note="appearNote"/>
 			<button class="_button" :class="$style.noteFooterButton" @click="reply()">
 				<i class="ti ti-arrow-back-up"></i>
@@ -128,7 +140,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<i class="ti ti-ban"></i>
 			</button>
 			<button ref="reactButton" :class="$style.noteFooterButton" class="_button" @click="toggleReact()">
-				<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--eventReactionHeart);"></i>
+				<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--love);"></i>
 				<i v-else-if="appearNote.myReaction != null" class="ti ti-minus" style="color: var(--accent);"></i>
 				<i v-else-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
 				<i v-else class="ti ti-plus"></i>
@@ -146,6 +158,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<button class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'replies' }]" @click="tab = 'replies'"><i class="ti ti-arrow-back-up"></i> {{ i18n.ts.replies }}</button>
 		<button class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'renotes' }]" @click="tab = 'renotes'"><i class="ti ti-repeat"></i> {{ i18n.ts.renotes }}</button>
 		<button class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'reactions' }]" @click="tab = 'reactions'"><i class="ti ti-icons"></i> {{ i18n.ts.reactions }}</button>
+		<button v-if="appearNote.updatedAt" class="_button" :class="[$style.tab, { [$style.tabActive]: tab === 'history'}]" @click="tab = 'history'"> <i class="ti ti-history"></i> {{ i18n.ts.editHistory }} </button>
 	</div>
 	<div>
 		<div v-if="tab === 'replies'">
@@ -182,6 +195,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</template>
 			</MkPagination>
 		</div>
+		<div v-if="tab === 'history'">
+			<div v-if="!historiesLoaded" style="padding: 16px">
+				<MkButton style="margin: 0 auto;" primary rounded @click="loadHistories">{{ i18n.ts.loadMore }}</MkButton>
+			</div>
+			<MkSwitch v-if="historiesLoaded" v-model="history_raw" style="padding: 16px;">raw diff</MkSwitch>
+			<MkNoteHistorySub
+				v-for="(history, index) in histories"
+				:key="history.id"
+				:oldNote="histories[index+1] ? histories[index+1] : null"
+				:newNote="history"
+				:originalNote="appearNote"
+				:class="$style.reply"
+				:detail="true"
+				:raw="history_raw"
+				:index="index"
+			/>
+			<div v-if="historiesLoaded && !history_list_end" style="padding: 16px">
+				<MkButton style="margin: 0 auto;" primary rounded @click="loadHistories">{{ i18n.ts.loadMore }}</MkButton>
+			</div>
+		</div>
 	</div>
 </div>
 <div v-else class="_panel" :class="$style.muted" @click="muted = false">
@@ -199,6 +232,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, inject, onMounted, provide, ref, shallowRef } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
+import { isLink } from '@@/js/is-link.js';
+import MkNoteHistorySub from '@/components/MkNoteHistorySub.vue';
 import MkNoteSub from '@/components/MkNoteSub.vue';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
@@ -222,7 +257,7 @@ import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
-import { host } from '@/config.js';
+import { host } from '@@/js/config.js';
 import { getNoteClipMenu, getNoteMenu, getRenoteMenu } from '@/scripts/get-note-menu.js';
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
 import { deepClone } from '@/scripts/clone.js';
@@ -234,7 +269,9 @@ import MkUserCardMini from '@/components/MkUserCardMini.vue';
 import MkPagination, { type Paging } from '@/components/MkPagination.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import MkButton from '@/components/MkButton.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
 import { isEnabledUrlPreview } from '@/instance.js';
+import { getAppearNote } from '@/scripts/get-appear-note.js';
 import { type Keymap } from '@/scripts/hotkey.js';
 
 const props = withDefaults(defineProps<{
@@ -267,14 +304,7 @@ if (noteViewInterruptors.length > 0) {
 	});
 }
 
-const isRenote = (
-	note.value.renote != null &&
-	note.value.reply == null &&
-	note.value.text == null &&
-	note.value.cw == null &&
-	note.value.fileIds && note.value.fileIds.length === 0 &&
-	note.value.poll == null
-);
+const isRenote = Misskey.note.isPureRenote(note.value);
 
 const rootEl = shallowRef<HTMLElement>();
 const menuButton = shallowRef<HTMLElement>();
@@ -282,7 +312,7 @@ const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
 const clipButton = shallowRef<HTMLElement>();
-const appearNote = computed(() => isRenote ? note.value.renote as Misskey.entities.Note : note.value);
+const appearNote = computed(() => getAppearNote(note.value));
 const galleryEl = shallowRef<InstanceType<typeof MkMediaList>>();
 const isMyRenote = $i && ($i.id === note.value.userId);
 const showContent = ref(false);
@@ -295,6 +325,7 @@ const urls = parsed ? extractUrlFromMfm(parsed).filter((url) => appearNote.value
 const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultStore.state.instanceTicker === 'remote' && appearNote.value.user.instance);
 const conversation = ref<Misskey.entities.Note[]>([]);
 const replies = ref<Misskey.entities.Note[]>([]);
+const histories = ref<Misskey.entities.NoteHistory[]>([]);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || appearNote.value.userId === $i?.id);
 
 const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
@@ -474,14 +505,6 @@ function toggleReact() {
 }
 
 function onContextmenu(ev: MouseEvent): void {
-	const isLink = (el: HTMLElement): boolean => {
-		if (el.tagName === 'A') return true;
-		if (el.parentElement) {
-			return isLink(el.parentElement);
-		}
-		return false;
-	};
-
 	if (ev.target && isLink(ev.target as HTMLElement)) return;
 	if (window.getSelection()?.toString() !== '') return;
 
@@ -536,6 +559,44 @@ function loadReplies() {
 		limit: 30,
 	}).then(res => {
 		replies.value = res;
+	});
+}
+
+const historiesLoaded = ref(false);
+const histories_untilId = ref<Misskey.entities.NoteHistory['id']>();
+const history_list_end = ref(false);
+const history_raw = ref(false);
+
+function loadHistories() {
+	historiesLoaded.value = true;
+	misskeyApi('notes/history', {
+		...(histories_untilId.value ? { untilId: histories_untilId.value } : {} ),
+		noteId: appearNote.value.id,
+		limit: 5,
+	}).then(res => {
+		if (histories.value.length === 0) {
+			const current_note = appearNote.value;
+			const current_version: Misskey.entities.NoteHistory = {
+				id: current_note.id,
+				noteId: current_note.id,
+				createdAt: current_note.createdAt,
+				updatedAt: current_note.createdAt,
+				userId: current_note.userId,
+				text: current_note.text,
+				fileIds: current_note.fileIds,
+				files: current_note.files,
+				visibility: current_note.visibility,
+				visibleUserIds: current_note.visibleUserIds,
+				emojis: current_note.emojis,
+			};
+			histories.value.push(current_version);
+		}
+		if (res.length === 0) {
+			history_list_end.value = true;
+			return;
+		}
+		histories_untilId.value = res[ res.length - 1 ].id;
+		histories.value = histories.value.concat(res);
 	});
 }
 

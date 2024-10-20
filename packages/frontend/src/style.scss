@@ -6,6 +6,17 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
+
+@font-face {
+    // Override
+    font-family: 'M PLUS Rounded 1c';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+20-7E, U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
+}
+
 :root {
 	--radius: 12px;
 	--marginFull: 16px;
@@ -17,18 +28,20 @@
 	--minBottomSpacingMobile: calc(72px + max(12px, env(safe-area-inset-bottom, 0px)));
 	--minBottomSpacing: var(--minBottomSpacingMobile);
 
-	@media (max-width: 500px) {
-		--margin: var(--marginHalf);
-	}
+	& {
+		//--ad: rgb(255 169 0 / 10%);
+		--eventFollow: #36aed2;
+		--eventRenote: #36d298;
+		--eventReply: #007aff;
+		--eventReactionHeart: #dd2e44;
+		--eventReaction: #e99a0b;
+		--eventAchievement: #cb9a11;
+		--eventOther: #88a6b7;
 
-	//--ad: rgb(255 169 0 / 10%);
-	--eventFollow: #36aed2;
-	--eventRenote: #36d298;
-	--eventReply: #007aff;
-	--eventReactionHeart: #dd2e44;
-	--eventReaction: #e99a0b;
-	--eventAchievement: #cb9a11;
-	--eventOther: #88a6b7;
+		@media (max-width: 500px) {
+			--margin: var(--marginHalf);
+		}
+	}
 }
 
 ::selection {
@@ -42,7 +55,11 @@ html {
 	accent-color: var(--accent);
 	overflow: auto;
 	overflow-wrap: break-word;
-	font-family: 'Hiragino Maru Gothic Pro', "BIZ UDGothic", Roboto, HelveticaNeue, Arial, sans-serif;
+	font-family:
+    'M PLUS Rounded 1c', // custom (neko)
+    'Hiragino Maru Gothic Pro', "BIZ UDGothic", // jp fallback (upstream)
+    Roboto, HelveticaNeue, Arial, // html fallback (upstream)
+    sans-serif; // defaults to
 	font-size: 14px;
 	line-height: 1.35;
 	text-size-adjust: 100%;
@@ -255,11 +272,11 @@ rt {
 	background: var(--accent);
 
 	&:not(:disabled):hover {
-		background: var(--X8);
+		background: hsl(from var(--accent) h s calc(l + 5));
 	}
 
 	&:not(:disabled):active {
-		background: var(--X9);
+		background: hsl(from var(--accent) h s calc(l - 5));
 	}
 }
 
@@ -269,11 +286,11 @@ rt {
 	background: linear-gradient(90deg, var(--buttonGradateA), var(--buttonGradateB));
 
 	&:not(:disabled):hover {
-		background: linear-gradient(90deg, var(--X8), var(--X8));
+		background: linear-gradient(90deg, hsl(from var(--accent) h s calc(l + 5)), hsl(from var(--accent) h s calc(l + 5)));
 	}
 
 	&:not(:disabled):active {
-		background: linear-gradient(90deg, var(--X8), var(--X8));
+		background: linear-gradient(90deg, hsl(from var(--accent) h s calc(l + 5)), hsl(from var(--accent) h s calc(l + 5)));
 	}
 }
 
@@ -378,6 +395,16 @@ rt {
 	vertical-align: top;
 }
 
+._modified {
+	margin-left: 0.7em;
+	font-size: 65%;
+	padding: 2px 3px;
+	color: var(--warn);
+	border: solid 1px var(--warn);
+	border-radius: 4px;
+	vertical-align: top;
+}
+
 ._table {
 	> ._row {
 		display: flex;
@@ -447,7 +474,7 @@ rt {
 	--fg: #693410;
 }
 
-html[data-color-mode=dark] ._woodenFrame {
+html[data-color-scheme=dark] ._woodenFrame {
 	--bg: #1d0c02;
 	--fg: #F1E8DC;
 	--panel: #192320;

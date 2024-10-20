@@ -5,7 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div v-if="hasDisconnected && defaultStore.state.serverDisconnectedBehavior === 'quiet'" :class="$style.root" class="_panel _shadow" @click="resetDisconnected">
-	<div><i class="ti ti-alert-triangle"></i> {{ i18n.ts.disconnectedFromServer }}</div>
+	<div class="_mk_reload_dialog"><i src="https://data.nekoplanet.xyz/nekoplanet-storage/misskey/9ef374e9-8e6c-40f3-8aec-67e2944f10d9.webp" class="_mk_reload_inner"></i> {{ i18n.ts.disconnectedFromServer }}</div>
 	<div :class="$style.command" class="_buttons">
 		<MkButton small primary @click="reload">{{ i18n.ts.reload }}</MkButton>
 		<MkButton small>{{ i18n.ts.doNothing }}</MkButton>
@@ -58,5 +58,33 @@ onUnmounted(() => {
 
 .command {
 	margin-top: 8px;
+}
+
+._panel {
+	// 유즈 에러화면 (!important 파티)
+	padding-top: 8px !important;
+
+	>div._mk_reload_dialog {
+		font-size: 0 !important;
+		text-align: center !important;
+		&:after {
+			display: inline-block !important;
+			margin-left: 100px !important;
+			vertical-align: middle !important;
+			font-size: 14px !important;
+		}
+
+		._mk_reload_inner {
+			display: inline-block;
+			&::before {
+				content: "" !important;
+				display: inline-block !important;
+				background-size: 42px 37px !important;
+				width: 42px !important; height: 37px !important;
+				vertical-align: middle !important;
+				transform: scale(1.4) !important;
+			}
+		}
+	}
 }
 </style>

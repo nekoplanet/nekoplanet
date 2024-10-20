@@ -180,6 +180,38 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canEditNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canInitiateConversation: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canCreateContent: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canUpdateContent: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canDeleteContent: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canPurgeAccount: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canUpdateAvatar: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canUpdateBanner: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
 			type: 'integer',
 			optional: false, nullable: false,
@@ -270,6 +302,26 @@ export const packedRolePoliciesSchema = {
 		},
 		avatarDecorationLimit: {
 			type: 'integer',
+			optional: false, nullable: false,
+		},
+		canImportAntennas: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canImportBlocking: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canImportFollowing: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canImportMuting: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canImportUserLists: {
+			type: 'boolean',
 			optional: false, nullable: false,
 		},
 	},
