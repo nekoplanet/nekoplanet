@@ -54,8 +54,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (profile?.email) {
 				this.emailService.sendEmail(profile.email, 'Account Approved',
-					'Your Account has been approved have fun socializing!',
-					'Your Account has been approved have fun socializing!');
+					'Your Account has been approved!<br>Have fun socializing!',
+					'Your Account has been approved! Have fun socializing!');
 			}
 
 			this.moderationLogService.log(me, 'approve', {

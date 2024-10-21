@@ -174,6 +174,9 @@ export class SignupApiService {
 		}
 
 		if (this.meta.emailRequiredForSignup) {
+			if (!emailAddress) {
+				throw new FastifyReplyError(400, 'EMAIL_NOT_PROVIDED');
+			}
 			if (await this.usersRepository.exists({ where: { usernameLower: username.toLowerCase(), host: IsNull() } })) {
 				throw new FastifyReplyError(400, 'DUPLICATED_USERNAME');
 			}
@@ -197,7 +200,7 @@ export class SignupApiService {
 			const pendingUser = await this.userPendingsRepository.insertOne({
 				id: this.idService.gen(),
 				code,
-				email: emailAddress!,
+				email: emailAddress,
 				username: username,
 				password: hash,
 				reason: reason,
@@ -205,7 +208,7 @@ export class SignupApiService {
 
 			const link = `${this.config.url}/signup-complete/${code}`;
 
-			this.emailService.sendEmail(emailAddress!, 'Signup',
+			this.emailService.sendEmail(emailAddress, 'Signup',
 				`To complete signup, please click this link:<br><a href="${link}">${link}</a>`,
 				`To complete signup, please click this link: ${link}`);
 
@@ -225,8 +228,8 @@ export class SignupApiService {
 
 			if (emailAddress) {
 				this.emailService.sendEmail(emailAddress, 'Approval pending',
-					'Congratulations! Your account is now pending approval. You will get notified when you have been accepted.',
-					'Congratulations! Your account is now pending approval. You will get notified when you have been accepted.');
+					'Your account is now pending approval.<br>You will get notified when you have been accepted.',
+					'Your account is now pending approval. You will get notified when you have been accepted.');
 			}
 
 			if (ticket) {
@@ -323,8 +326,8 @@ export class SignupApiService {
 			if (this.meta.approvalRequiredForSignup) {
 				if (pendingUser.email) {
 					this.emailService.sendEmail(pendingUser.email, 'Approval pending',
-						'Congratulations! Your account is now pending approval. You will get notified when you have been accepted.',
-						'Congratulations! Your account is now pending approval. You will get notified when you have been accepted.');
+						'Your account is now pending approval. You will get notified when you have been accepted.',
+						'Your account is now pending approval. You will get notified when you have been accepted.');
 				}
 
 				const moderators = await this.roleService.getModerators();
