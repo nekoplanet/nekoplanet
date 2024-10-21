@@ -313,10 +313,10 @@ export async function openAccountMenu(opts: {
 			children: [{
 				text: i18n.ts.existingAccount,
 				action: () => { showSigninDialog(); },
-			}, /*{
+			}, {
 				text: i18n.ts.createAccount,
 				action: () => { createAccount(); },
-			}*/],
+			}],
 		}, {
 			type: 'link',
 			icon: 'ti ti-users',
