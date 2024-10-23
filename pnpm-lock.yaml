@@ -291,8 +291,8 @@ importers:
         specifier: 0.42.0
         version: 0.42.0(encoding@0.1.13)
       mfm-js:
-        specifier: github:nekoplanet/mfm.js#nekoplanet
-        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/d3f26f5cab65916c59ed7b7a22ee1c392a83b496
+        specifier: github:nekoplanet/mfm.js#neko-241023
+        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974
       microformats-parser:
         specifier: 2.0.2
         version: 2.0.2
@@ -794,8 +794,8 @@ importers:
         specifier: 0.19.0
         version: 0.19.0
       mfm-js:
-        specifier: github:nekoplanet/mfm.js#nekoplanet
-        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/d3f26f5cab65916c59ed7b7a22ee1c392a83b496
+        specifier: github:nekoplanet/mfm.js#neko-241023
+        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974
       misskey-bubble-game:
         specifier: workspace:*
         version: link:../misskey-bubble-game
@@ -8170,8 +8170,8 @@ packages:
   mfm-js@0.24.0:
     resolution: {integrity: sha512-6m8N0ElH9/4CA1izhVqmxTfLj5Z9RspdqM/lMew4xU/UTgm4Pf//VpDunpasxbRFjeJSVW+zoVwL4ZPfPtfiQg==}
 
-  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/d3f26f5cab65916c59ed7b7a22ee1c392a83b496:
-    resolution: {tarball: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/d3f26f5cab65916c59ed7b7a22ee1c392a83b496}
+  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974:
+    resolution: {tarball: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974}
     version: 0.24.0
 
   microformats-parser@2.0.2:
@@ -19621,7 +19621,7 @@ snapshots:
     dependencies:
       '@twemoji/parser': 15.0.0
 
-  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/d3f26f5cab65916c59ed7b7a22ee1c392a83b496:
+  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974:
     dependencies:
       '@twemoji/parser': 15.0.0
 

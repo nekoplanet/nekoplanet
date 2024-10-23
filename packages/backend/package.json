@@ -134,7 +134,7 @@
 		"jsrsasign": "11.1.0",
 		"meilisearch": "0.42.0",
 		"juice": "11.0.0",
-		"mfm-js": "github:nekoplanet/mfm.js#nekoplanet",
+		"mfm-js": "github:nekoplanet/mfm.js#neko-241023",
 		"microformats-parser": "2.0.2",
 		"mime-types": "2.1.35",
 		"misskey-js": "workspace:*",
