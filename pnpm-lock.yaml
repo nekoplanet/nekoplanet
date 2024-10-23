@@ -291,8 +291,8 @@ importers:
         specifier: 0.42.0
         version: 0.42.0(encoding@0.1.13)
       mfm-js:
-        specifier: 0.24.0
-        version: 0.24.0
+        specifier: github:nekoplanet/mfm.js#neko-241023
+        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974
       microformats-parser:
         specifier: 2.0.2
         version: 2.0.2
@@ -794,8 +794,8 @@ importers:
         specifier: 0.19.0
         version: 0.19.0
       mfm-js:
-        specifier: 0.24.0
-        version: 0.24.0
+        specifier: github:nekoplanet/mfm.js#neko-241023
+        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974
       misskey-bubble-game:
         specifier: workspace:*
         version: link:../misskey-bubble-game
@@ -964,7 +964,7 @@ importers:
         version: 8.7.0(eslint@9.12.0)(typescript@5.6.2)
       '@vitest/coverage-v8':
         specifier: 1.6.0
-        version: 1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0))
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0))
       '@vue/runtime-core':
         specifier: 3.5.10
         version: 3.5.10
@@ -1030,7 +1030,7 @@ importers:
         version: 1.0.3
       vitest:
         specifier: 1.6.0
-        version: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0)
+        version: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0)
       vitest-fetch-mock:
         specifier: 0.2.2
         version: 0.2.2(encoding@0.1.13)(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0))
@@ -1160,7 +1160,7 @@ importers:
         version: 8.7.0(eslint@9.12.0)(typescript@5.6.2)
       '@vitest/coverage-v8':
         specifier: 1.6.0
-        version: 1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0))
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0))
       '@vue/runtime-core':
         specifier: 3.5.10
         version: 3.5.10
@@ -8169,6 +8169,10 @@ packages:
 
   mfm-js@0.24.0:
     resolution: {integrity: sha512-6m8N0ElH9/4CA1izhVqmxTfLj5Z9RspdqM/lMew4xU/UTgm4Pf//VpDunpasxbRFjeJSVW+zoVwL4ZPfPtfiQg==}
+
+  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974:
+    resolution: {tarball: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974}
+    version: 0.24.0
 
   microformats-parser@2.0.2:
     resolution: {integrity: sha512-tUf9DmN4Jq/tGyp1YH2V6D/Cud+9Uc0WhjjUFirqVeHTRkkfLDacv6BQFT7h7HFsD0Z8wja5eKkRgzZU8bv0Fw==}
@@ -15400,7 +15404,7 @@ snapshots:
       vite: 5.4.8(@types/node@20.14.12)(sass@1.79.3)(terser@5.33.0)
       vue: 3.5.10(typescript@5.6.2)
 
-  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0))':
+  '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -15415,7 +15419,7 @@ snapshots:
       std-env: 3.7.0
       strip-literal: 2.1.0
       test-exclude: 6.0.0
-      vitest: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0)
+      vitest: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -19617,6 +19621,10 @@ snapshots:
     dependencies:
       '@twemoji/parser': 15.0.0
 
+  mfm-js@https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974:
+    dependencies:
+      '@twemoji/parser': 15.0.0
+
   microformats-parser@2.0.2:
     dependencies:
       parse5: 7.1.2
@@ -22395,11 +22403,11 @@ snapshots:
   vitest-fetch-mock@0.2.2(encoding@0.1.13)(vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0)):
     dependencies:
       cross-fetch: 3.1.8(encoding@0.1.13)
-      vitest: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0)
+      vitest: 1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0)
     transitivePeerDependencies:
       - encoding
 
-  vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1(bufferutil@4.0.7)(utf-8-validate@6.0.3))(sass@1.79.3)(terser@5.33.0):
+  vitest@1.6.0(@types/node@20.14.12)(happy-dom@10.0.3)(jsdom@24.1.1)(sass@1.79.3)(terser@5.33.0):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
