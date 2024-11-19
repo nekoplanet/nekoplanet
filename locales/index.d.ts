@@ -5299,10 +5299,6 @@ export interface Locale extends ILocale {
          */
         "resolveTutorial": string;
     };
-    /**
-     * 編集済み: {date} {time}
-     */
-    "noteUpdatedAt": ParameterizedString<"date" | "time">;
     "_delivery": {
         /**
          * 配信状態
