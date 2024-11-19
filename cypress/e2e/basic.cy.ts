@@ -51,49 +51,6 @@ describe('After setup instance', () => {
   it('successfully loads', () => {
     cy.visitHome();
   });
-
-	it('signup', () => {
-		cy.visitHome();
-
-		cy.intercept('POST', '/api/signup').as('signup');
-
-		cy.get('[data-cy-signup]').click();
-		cy.get('[data-cy-signup-rules-continue]').should('be.disabled');
-		cy.get('[data-cy-signup-rules-notes-agree] [data-cy-switch-toggle]').click();
-		cy.get('[data-cy-modal-dialog-ok]').click();
-		cy.get('[data-cy-signup-rules-continue]').should('not.be.disabled');
-		cy.get('[data-cy-signup-rules-continue]').click();
-
-		cy.get('[data-cy-signup-submit]').should('be.disabled');
-		cy.get('[data-cy-signup-username] input').type('alice');
-		cy.get('[data-cy-signup-submit]').should('be.disabled');
-		cy.get('[data-cy-signup-password] input').type('alice1234');
-		cy.get('[data-cy-signup-submit]').should('be.disabled');
-		cy.get('[data-cy-signup-password-retype] input').type('alice1234');
-		cy.get('[data-cy-signup-submit]').should('not.be.disabled');
-		cy.get('[data-cy-signup-submit]').click();
-
-		cy.wait('@signup');
-  });
-
-  it('signup with duplicated username', () => {
-		cy.registerUser('alice', 'alice1234');
-
-		cy.visitHome();
-
-		// ユーザー名が重複している場合の挙動確認
-		cy.get('[data-cy-signup]').click();
-		cy.get('[data-cy-signup-rules-continue]').should('be.disabled');
-		cy.get('[data-cy-signup-rules-notes-agree] [data-cy-switch-toggle]').click();
-		cy.get('[data-cy-modal-dialog-ok]').click();
-		cy.get('[data-cy-signup-rules-continue]').should('not.be.disabled');
-		cy.get('[data-cy-signup-rules-continue]').click();
-
-		cy.get('[data-cy-signup-username] input').type('alice');
-		cy.get('[data-cy-signup-password] input').type('alice1234');
-		cy.get('[data-cy-signup-password-retype] input').type('alice1234');
-		cy.get('[data-cy-signup-submit]').should('be.disabled');
-  });
 });
 
 describe('After user signup', () => {

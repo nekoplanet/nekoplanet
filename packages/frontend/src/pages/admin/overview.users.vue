@@ -47,9 +47,11 @@ useInterval(fetch, 1000 * 60, {
 .root {
 	&:global {
 		> .users {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-			grid-gap: 12px;
+			& {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				grid-gap: 12px;
+			}
 
 			.chart-move {
 				transition: transform 1s ease;

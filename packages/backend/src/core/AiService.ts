@@ -7,7 +7,8 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { Injectable } from '@nestjs/common';
-import * as nsfw from 'nsfwjs';
+import { default as nsfw } from 'nsfwjs';
+import { Tensor3D } from '@tensorflow/tfjs-core';
 import si from 'systeminformation';
 import { Mutex } from 'async-mutex';
 import { bindThis } from '@/decorators.js';
@@ -51,7 +52,7 @@ export class AiService {
 			}
 
 			const buffer = await fs.promises.readFile(path);
-			const image = await tf.node.decodeImage(buffer, 3) as any;
+			const image = await tf.node.decodeImage(buffer as any, 3) as Tensor3D;
 			try {
 				const predictions = await this.model.classify(image);
 				return predictions;

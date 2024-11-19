@@ -60,6 +60,7 @@ export function useNoteCapture(props: {
 			}
 
 			case 'pollVoted': {
+				if (!note.value.poll) break;
 				const choice = body.choice;
 
 				const choices = [...note.value.poll.choices];
@@ -72,6 +73,17 @@ export function useNoteCapture(props: {
 				};
 
 				note.value.poll.choices = choices;
+				break;
+			}
+
+			case 'updated': {
+				note.value.updatedAt = new Date().toISOString();
+				note.value.cw = body.cw;
+				note.value.text = body.text;
+				note.value.files = body.files;
+				note.value.fileIds = body.fileIds;
+				note.value.poll = body.poll;
+				note.value.emojis = body.emojis;
 				break;
 			}
 

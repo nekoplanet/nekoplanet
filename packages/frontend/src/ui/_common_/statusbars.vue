@@ -72,6 +72,16 @@ const XUserList = defineAsyncComponent(() => import('./statusbar-user-list.vue')
 		font-size: 0.9em;
 	}
 
+	& {
+		display: flex;
+		vertical-align: bottom;
+		width: 100%;
+		line-height: var(--height);
+		height: var(--height);
+		overflow: clip;
+		contain: strict;
+	}
+
 	&.black {
 		background: #000;
 		color: #fff;

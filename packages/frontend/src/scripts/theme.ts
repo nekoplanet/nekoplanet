@@ -32,6 +32,7 @@ export const themeProps = Object.keys(lightTheme.props).filter(key => !key.start
 
 export const getBuiltinThemes = () => Promise.all(
 	[
+		'l-nekoplanet-light',
 		'l-light',
 		'l-coffee',
 		'l-apricot',
@@ -42,6 +43,7 @@ export const getBuiltinThemes = () => Promise.all(
 		'l-sushi',
 		'l-u0',
 
+		'd-nekoplanet-dark',
 		'd-dark',
 		'd-persimmon',
 		'd-astro',
@@ -116,8 +118,8 @@ function compile(theme: Theme): Record<string, string> {
 			return getColor(theme.props[val]);
 		} else if (val[0] === ':') { // func
 			const parts = val.split('<');
-			const func = parts.shift().substring(1);
-			const arg = parseFloat(parts.shift());
+			const func = parts.shift()!.substring(1);
+			const arg = parseFloat(parts.shift()!);
 			const color = getColor(parts.join('<'));
 
 			switch (func) {

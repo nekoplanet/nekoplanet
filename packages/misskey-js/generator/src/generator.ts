@@ -3,6 +3,8 @@ import { OpenAPIV3_1 } from 'openapi-types';
 import { toPascal } from 'ts-case-convert';
 import OpenAPIParser from '@readme/openapi-parser';
 import openapiTS from 'openapi-typescript';
+import { values } from 'lodash';
+import ts from 'typescript';
 
 async function generateBaseTypes(
 	openApiDocs: OpenAPIV3_1.Document,
@@ -20,7 +22,7 @@ async function generateBaseTypes(
 	}
 	lines.push('');
 
-	const generatedTypes = await openapiTS(openApiJsonPath, {
+	const generatedTypes: string = await openapiTS(openApiJsonPath, {
 		exportType: true,
 		transform(schemaObject) {
 			if ('format' in schemaObject && schemaObject.format === 'binary') {

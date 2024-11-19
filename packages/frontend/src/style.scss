@@ -6,11 +6,21 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
+
+@font-face {
+    // Override
+    font-family: 'M PLUS Rounded 1c';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    unicode-range: U+20-7E, U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
+}
+
 :root {
 	--MI-radius: 12px;
 	--MI-marginFull: 16px;
 	--MI-marginHalf: 10px;
-
 	--MI-margin: var(--MI-marginFull);
 
 	// switch dynamically
@@ -33,7 +43,11 @@ html {
 	accent-color: var(--MI_THEME-accent);
 	overflow: auto;
 	overflow-wrap: break-word;
-	font-family: 'Hiragino Maru Gothic Pro', "BIZ UDGothic", Roboto, HelveticaNeue, Arial, sans-serif;
+	font-family:
+    'M PLUS Rounded 1c', // custom (neko)
+    'Hiragino Maru Gothic Pro', "BIZ UDGothic", // jp fallback (upstream)
+    Roboto, HelveticaNeue, Arial, // html fallback (upstream)
+    sans-serif; // defaults to
 	font-size: 14px;
 	line-height: 1.35;
 	text-size-adjust: 100%;

@@ -106,7 +106,7 @@ describe('ActivityPub', () => {
 		sensitiveWords: [] as string[],
 		prohibitedWords: [] as string[],
 	} as MiMeta;
-	const meta = { ...metaInitial };
+	let meta = { ...metaInitial };
 
 	function updateMeta(newMeta: Partial<MiMeta>): void {
 		for (const key in meta) {
@@ -475,6 +475,35 @@ describe('ActivityPub', () => {
 				'https://example.org/ns#unknown': 'test test bar',
 				// undefined: 'test test baz',
 			});
+		});
+
+		test('cacheRemoteSensitiveFiles=false only affects sensitive files', async () => {
+			meta = { ...metaInitial, cacheRemoteSensitiveFiles: false };
+
+			const imageObject: IApDocument = {
+				type: 'Document',
+				mediaType: 'image/png',
+				url: 'http://host1.test/foo.png',
+				name: '',
+			};
+			const driveFile = await imageService.createImage(
+				await createRandomRemoteUser(resolver, personService),
+				imageObject,
+			);
+			assert.ok(driveFile && !driveFile.isLink);
+
+			const sensitiveImageObject: IApDocument = {
+				type: 'Document',
+				mediaType: 'image/png',
+				url: 'http://host1.test/bar.png',
+				name: '',
+				sensitive: true,
+			};
+			const sensitiveDriveFile = await imageService.createImage(
+				await createRandomRemoteUser(resolver, personService),
+				sensitiveImageObject,
+			);
+			assert.ok(sensitiveDriveFile && sensitiveDriveFile.isLink);
 		});
 	});
 });

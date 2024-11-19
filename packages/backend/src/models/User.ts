@@ -147,6 +147,7 @@ export class MiUser {
 		flipH?: boolean;
 		offsetX?: number;
 		offsetY?: number;
+		url?: string;
 	}[];
 
 	@Index()
@@ -275,6 +276,16 @@ export class MiUser {
 		comment: 'The native access token of the User. It will be null if the origin of the user is local.',
 	})
 	public token: string | null;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public approved: boolean;
+
+	@Column('varchar', {
+		length: 1000, nullable: true,
+	})
+	public signupReason: string | null;
 
 	constructor(data: Partial<MiUser>) {
 		if (data == null) return;

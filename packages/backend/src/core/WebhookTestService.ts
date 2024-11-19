@@ -89,6 +89,8 @@ function generateDummyUser(override?: Partial<MiUser>): MiUser {
 		uri: null,
 		followersUri: null,
 		token: null,
+		approved: override?.approved ?? false,
+		signupReason: override?.signupReason ?? null,
 		...override,
 	};
 }
@@ -131,6 +133,10 @@ function generateDummyNote(override?: Partial<MiNote>): MiNote {
 		replyUserHost: null,
 		renoteUserId: null,
 		renoteUserHost: null,
+		createdAt: new Date(),
+		updatedAt: null,
+		updatedAtHistory: null,
+		noteEditHistory: [],
 		...override,
 	};
 }
@@ -198,6 +204,7 @@ function toPackedUserLite(user: MiUser, override?: Packed<'UserLite'>): Packed<'
 		emojis: user.emojis,
 		onlineStatus: 'active',
 		badgeRoles: [],
+		approved: override?.approved ?? false,
 		...override,
 	};
 }

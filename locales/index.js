@@ -29,6 +29,8 @@ const languages = [
 	'kab-KAB',
 	'kn-IN',
 	'ko-KR',
+	'ko-NK',
+	'ko-GS',
 	'nl-NL',
 	'no-NO',
 	'pl-PL',

@@ -139,7 +139,9 @@ const props = withDefaults(defineProps<PostFormProps & {
 	fixed?: boolean;
 	autofocus?: boolean;
 	freezeAfterPosted?: boolean;
+	updateMode?: boolean;
 	mock?: boolean;
+	editMode?: boolean;
 }>(), {
 	initialVisibleUsers: () => [],
 	autofocus: true,
@@ -242,7 +244,7 @@ const maxTextLength = computed((): number => {
 });
 
 const canPost = computed((): boolean => {
-	return !props.mock && !posting.value && !posted.value &&
+	return ((!props.mock && !posting.value && !posted.value) || props.editMode) &&
 		(
 			1 <= textLength.value ||
 			1 <= files.value.length ||
@@ -691,8 +693,8 @@ function saveDraft() {
 	const draftData = JSON.parse(miLocalStorage.getItem('drafts') ?? '{}');
 
 	draftData[draftKey.value] = {
-		updatedAt: new Date(),
 		data: {
+			updatedAt: new Date(),
 			text: text.value,
 			useCw: useCw.value,
 			cw: cw.value,
@@ -703,6 +705,7 @@ function saveDraft() {
 			visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(x => x.id) : undefined,
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
+			noteId: props.updateMode ? props.initialNote?.id : undefined,
 		},
 	};
 
@@ -784,7 +787,15 @@ async function post(ev?: MouseEvent) {
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
+		noteId: props.updateMode ? props.initialNote?.id : undefined,
 	};
+
+	if (props.initialNote && props.editMode) {
+		postData.updatedAt = new Date();
+		postData.updatedAtHistory = props.initialNote.updatedAtHistory || [];
+		postData.updatedAtHistory.push(postData.updatedAt);
+		postData.id = props.initialNote.id;
+	}
 
 	if (withHashtags.value && hashtags.value && hashtags.value.trim() !== '') {
 		const hashtags_ = hashtags.value.trim().split(' ').map(x => x.startsWith('#') ? x : '#' + x).join(' ');
@@ -820,7 +831,7 @@ async function post(ev?: MouseEvent) {
 	}
 
 	posting.value = true;
-	misskeyApi('notes/create', postData, token).then(() => {
+	misskeyApi(props.updateMode ? 'notes/update' : 'notes/create', postData, token).then(() => {
 		if (props.freezeAfterPosted) {
 			posted.value = true;
 		} else {
@@ -837,13 +848,15 @@ async function post(ev?: MouseEvent) {
 			posting.value = false;
 			postAccount.value = null;
 
-			incNotesCount();
-			if (notesCount === 1) {
-				claimAchievement('notes1');
+			if (!props.editMode) {
+				incNotesCount();
+				if (notesCount === 1) {
+					claimAchievement('notes1');
+				}
 			}
 
-			const text = postData.text ?? '';
-			const lowerCase = text.toLowerCase();
+			const _text = postData.text ?? '';
+			const lowerCase = _text.toLowerCase();
 			if ((lowerCase.includes('love') || lowerCase.includes('❤')) && lowerCase.includes('misskey')) {
 				claimAchievement('iLoveMisskey');
 			}
@@ -851,23 +864,19 @@ async function post(ev?: MouseEvent) {
 				'https://youtu.be/Efrlqw8ytg4',
 				'https://www.youtube.com/watch?v=Efrlqw8ytg4',
 				'https://m.youtube.com/watch?v=Efrlqw8ytg4',
-
 				'https://youtu.be/XVCwzwxdHuA',
 				'https://www.youtube.com/watch?v=XVCwzwxdHuA',
 				'https://m.youtube.com/watch?v=XVCwzwxdHuA',
-
 				'https://open.spotify.com/track/3Cuj0mZrlLoXx9nydNi7RB',
 				'https://open.spotify.com/track/7anfcaNPQWlWCwyCHmZqNy',
 				'https://open.spotify.com/track/5Odr16TvEN4my22K9nbH7l',
 				'https://open.spotify.com/album/5bOlxyl4igOrp2DwVQxBco',
-			].some(url => text.includes(url))) {
+			].some((_url: string) => _text.includes(_url))) {
 				claimAchievement('brainDiver');
 			}
-
-			if (props.renote && (props.renote.userId === $i.id) && text.length > 0) {
+			if (props.renote && (props.renote.userId === $i.id) && _text.length > 0) {
 				claimAchievement('selfQuote');
 			}
-
 			const date = new Date();
 			const h = date.getHours();
 			const m = date.getMinutes();

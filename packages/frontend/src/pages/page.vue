@@ -136,7 +136,7 @@ const otherPostsPagination = {
 	endpoint: 'users/pages' as const,
 	limit: 6,
 	params: computed(() => ({
-		userId: page.value.user.id,
+		userId: page.value?.user.id,
 	})),
 };
 const path = computed(() => props.username + '/' + props.pageName);
@@ -153,7 +153,7 @@ function fetchPage() {
 		if (pageViewInterruptors.length > 0) {
 			let result = deepClone(_page);
 			for (const interruptor of pageViewInterruptors) {
-				result = await interruptor.handler(result);
+				result = await interruptor.handler(result) as typeof result;
 			}
 			page.value = result;
 		}
@@ -451,6 +451,10 @@ definePageMetadata(() => ({
 			.avatar {
 				height: var(--height);
 				width: var(--height);
+			}
+
+			& {
+				line-height: var(--height);
 			}
 		}
 

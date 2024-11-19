@@ -5,7 +5,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import endpoints from '../endpoints.js';
+import endpoints, { IEndpoint } from '../endpoints.js';
 
 export const meta = {
 	requireCredential: false,
@@ -42,8 +42,8 @@ export const paramDef = {
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 	) {
-		super(meta, paramDef, async (ps) => {
-			const ep = endpoints.find(x => x.name === ps.endpoint);
+		super(meta, paramDef, async (ps: {endpoint?: string}) => {
+			const ep = endpoints.find((x: IEndpoint) => x.name === ps.endpoint);
 			if (ep == null) return null;
 			return {
 				params: Object.entries(ep.params.properties ?? {}).map(([k, v]) => ({

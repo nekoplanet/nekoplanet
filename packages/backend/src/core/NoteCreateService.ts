@@ -124,6 +124,7 @@ type MinimumUser = {
 
 type Option = {
 	createdAt?: Date | null;
+	updatedAt?: Date | null;
 	name?: string | null;
 	text?: string | null;
 	reply?: MiNote | null;
@@ -848,6 +849,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 		);
 
 		return mentionedUsers;
+	}
+
+	@bindThis
+	public async appendNoteVisibleUser(actor: MiRemoteUser, note: MiNote, cc: string) {
+		//todo
 	}
 
 	@bindThis

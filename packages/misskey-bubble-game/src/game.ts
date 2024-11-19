@@ -228,7 +228,7 @@ export class DropAndFusionGame extends EventEmitter<{
 
 		const currentMono = this.monoDefinitions.find(y => y.id === bodyA.label);
 
-		if (currentMono == null) {
+		if (!currentMono) {
 			throw new Error('Current Mono Not Found');
 		}
 

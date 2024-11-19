@@ -16,6 +16,26 @@ export class MiNote {
 	public id: string;
 
 	@Index()
+	@Column('timestamp with time zone', {
+		comment: 'The created date of the Note.',
+		default: () => 'CURRENT_TIMESTAMP',
+	})
+	public createdAt: Date;
+
+	@Column('timestamp with time zone', {
+		comment: 'The last updated date of the Note.',
+		default: null,
+	})
+	public updatedAt: Date | null;
+
+	@Column('timestamp with time zone', {
+		comment: 'The history of when the note is updated',
+		array: true,
+		default: null,
+	})
+	public updatedAtHistory: Date[] | null;
+
+	@Index()
 	@Column({
 		...id(),
 		nullable: true,
@@ -54,6 +74,12 @@ export class MiNote {
 		nullable: true,
 	})
 	public text: string | null;
+
+	@Column('text', {
+		array: true,
+		default: '{}',
+	})
+	public noteEditHistory: string[];
 
 	@Column('varchar', {
 		length: 256, nullable: true,
@@ -229,6 +255,11 @@ export class MiNote {
 		comment: '[Denormalized]',
 	})
 	public renoteUserHost: string | null;
+
+	@Column('timestamp with time zone', {
+		default: null,
+	})
+	public updatedAt: Date | null;
 	//#endregion
 
 	constructor(data: Partial<MiNote>) {

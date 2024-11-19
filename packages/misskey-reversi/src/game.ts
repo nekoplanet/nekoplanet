@@ -16,9 +16,9 @@ const WHITE = false;
 export type MapCell = 'null' | 'empty';
 
 export type Options = {
-	isLlotheo: boolean;
-	canPutEverywhere: boolean;
-	loopedBoard: boolean;
+	isLlotheo?: boolean;
+	canPutEverywhere?: boolean;
+	loopedBoard?: boolean;
 };
 
 export type Undo = {
@@ -133,7 +133,7 @@ export class Game {
 
 	public undo() {
 		const undo = this.logs.pop();
-		if (undo == null) return;
+		if (!undo) return;
 		this.prevColor = undo.color;
 		this.prevPos = undo.pos;
 		this.board[undo.pos] = null;

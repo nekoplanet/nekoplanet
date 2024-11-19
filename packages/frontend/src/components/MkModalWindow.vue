@@ -100,6 +100,11 @@ defineExpose({
 	@media (max-width: 500px) {
 		--root-margin: 16px;
 	}
+
+	& {
+		--headerHeight: 46px;
+		--headerHeightNarrow: 42px;
+	}
 }
 
 .header {

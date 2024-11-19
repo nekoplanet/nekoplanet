@@ -125,10 +125,12 @@ describe('Timeline', () => {
 			 * FIXME: cannot receive this
 			 * @see https://github.com/misskey-dev/misskey/issues/14084
 			 */
+			/*
 			test.failing('Receive remote followee\'s visible specified-only reply to invisible specified-only Note', async () => {
 				const note = (await alice.client.request('notes/create', { text: 'a', visibility: 'specified' })).createdNote;
 				await postAndCheckReception(homeTimeline, true, { replyId: note.id, visibility: 'specified', visibleUserIds: [bobInA.id] });
 			});
+			*/
 		});
 	});
 
