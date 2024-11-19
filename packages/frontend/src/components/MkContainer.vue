@@ -64,28 +64,30 @@ const showBody = ref(props.expanded);
 const ignoreOmit = ref(false);
 const omitted = ref(false);
 
-function enter(el) {
+function enter(el: Element) {
+	if (!(el instanceof HTMLElement)) return;
 	const elementHeight = el.getBoundingClientRect().height;
-	el.style.height = 0;
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	el.style.height = '0';
 	el.offsetHeight; // reflow
-	el.style.height = Math.min(elementHeight, props.maxHeight ?? Infinity) + 'px';
+	el.style.height = `${Math.min(elementHeight, props.maxHeight ?? Infinity)}px`;
 }
 
-function afterEnter(el) {
-	el.style.height = null;
+function afterEnter(el: Element) {
+	if (!(el instanceof HTMLElement)) return;
+	el.style.height = '';
 }
 
-function leave(el) {
+function leave(el: Element) {
+	if (!(el instanceof HTMLElement)) return;
 	const elementHeight = el.getBoundingClientRect().height;
-	el.style.height = elementHeight + 'px';
-	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+	el.style.height = `${elementHeight}px`;
 	el.offsetHeight; // reflow
-	el.style.height = 0;
+	el.style.height = '0';
 }
 
-function afterLeave(el) {
-	el.style.height = null;
+function afterLeave(el: Element) {
+	if (!(el instanceof HTMLElement)) return;
+	el.style.height = '';
 }
 
 const calcOmit = () => {
@@ -167,11 +169,11 @@ onUnmounted(() => {
 
 .header {
 	position: sticky;
-	top: var(--stickyTop, 0px);
+	top: var(--MI-stickyTop, 0px);
 	left: 0;
-	color: var(--panelHeaderFg);
-	background: var(--panelHeaderBg);
-	border-bottom: solid 0.5px var(--panelHeaderDivider);
+	color: var(--MI_THEME-panelHeaderFg);
+	background: var(--MI_THEME-panelHeaderBg);
+	border-bottom: solid 0.5px var(--MI_THEME-panelHeaderDivider);
 	z-index: 2;
 	line-height: 1.4em;
 }
@@ -203,7 +205,7 @@ onUnmounted(() => {
 }
 
 .content {
-	--stickyTop: 0px;
+	--MI-stickyTop: 0px;
 
 	&.omitted {
 		position: relative;
@@ -218,11 +220,11 @@ onUnmounted(() => {
 			left: 0;
 			width: 100%;
 			height: 64px;
-			background: linear-gradient(0deg, var(--panel), color(from var(--panel) srgb r g b / 0));
+			background: linear-gradient(0deg, var(--MI_THEME-panel), color(from var(--MI_THEME-panel) srgb r g b / 0));
 
 			> .fadeLabel {
 				display: inline-block;
-				background: var(--panel);
+				background: var(--MI_THEME-panel);
 				padding: 6px 10px;
 				font-size: 0.8em;
 				border-radius: 999px;
@@ -231,7 +233,7 @@ onUnmounted(() => {
 
 			&:hover {
 				> .fadeLabel {
-					background: var(--panelHighlight);
+					background: var(--MI_THEME-panelHighlight);
 				}
 			}
 		}
