@@ -398,6 +398,9 @@ export const packedUserDetailedNotMeOnlySchema = {
 			nullable: false, optional: true,
 		},
 		securityKeys: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
 		approved: {
 			type: 'boolean',
 			nullable: false, optional: true,
@@ -446,6 +449,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 		},
 		//#endregion
 	},
+	
 } as const;
 
 export const packedMeDetailedOnlySchema = {
