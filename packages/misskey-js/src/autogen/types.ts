@@ -3842,10 +3842,10 @@ export type components = {
       followedMessage?: string | null;
       memo: string | null;
       moderationNote?: string;
-      approved?: boolean;
       twoFactorEnabled?: boolean;
       usePasswordLessLogin?: boolean;
       securityKeys?: boolean;
+      approved?: boolean;
       isFollowing?: boolean;
       isFollowed?: boolean;
       hasPendingFollowRequestFromYou?: boolean;
