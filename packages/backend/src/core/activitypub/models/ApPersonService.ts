@@ -38,7 +38,8 @@ import { RoleService } from '@/core/RoleService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import type { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
-import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import * as APTypes from '../type.js';
 import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { ApNoteService } from './ApNoteService.js';
@@ -47,8 +48,6 @@ import type { ApResolverService, Resolver } from '../ApResolverService.js';
 import type { ApLoggerService } from '../ApLoggerService.js';
 
 import type { ApImageService } from './ApImageService.js';
-import type { IActor, ICollection, IObject, IOrderedCollection } from '../type.js';
-import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -144,10 +143,10 @@ export class ApPersonService implements OnModuleInit {
 	 * @param uri Fetch target URI
 	 */
 	@bindThis
-	private validateActor(x: IObject, uri: string): IActor {
+	private validateActor(x: APTypes.IObject, uri: string): APTypes.IActor {
 		const expectHost = this.punyHost(uri);
 
-		if (!isActor(x)) {
+		if (!APTypes.isActor(x)) {
 			throw new Error(`invalid Actor type '${x.type}'`);
 		}
 
@@ -303,7 +302,7 @@ export class ApPersonService implements OnModuleInit {
 
 		const tags = extractApHashtags(person.tag).map(normalizeForSearch).splice(0, 32);
 
-		const isBot = getApType(object) === 'Service' || getApType(object) === 'Application';
+		const isBot = APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application';
 
 		const [followingVisibility, followersVisibility] = await Promise.all(
 			[
@@ -322,7 +321,7 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = getOneApHrefNullable(person.url);
+		const url = APTypes.getOneApHrefNullable(person.url);
 
 		if (url && !checkHttps(url)) {
 			throw new Error('unexpected schema of person url: ' + url);
@@ -355,16 +354,17 @@ export class ApPersonService implements OnModuleInit {
 					alsoKnownAs: person.alsoKnownAs,
 					isExplorable: person.discoverable,
 					username: person.preferredUsername,
+					approved: true,
 					usernameLower: person.preferredUsername?.toLowerCase(),
 					host,
 					inbox: person.inbox,
 					sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox,
-					followersUri: person.followers ? getApId(person.followers) : undefined,
-					featured: person.featured ? getApId(person.featured) : undefined,
+					followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
+					featured: person.featured ? APTypes.getApId(person.featured) : undefined,
 					uri: person.id,
 					tags,
 					isBot,
-					isCat: (person as any).isCat === true,
+					isCat: (person as Partial<MiRemoteUser>).isCat === true,
 					requireSigninToViewContents: (person as any).requireSigninToViewContents === true,
 					makeNotesFollowersOnlyBefore: (person as any).makeNotesFollowersOnlyBefore ?? null,
 					makeNotesHiddenBefore: (person as any).makeNotesHiddenBefore ?? null,
@@ -466,7 +466,7 @@ export class ApPersonService implements OnModuleInit {
 	 * @param movePreventUris ここに指定されたURIがPersonのmovedToに指定されていたり10回より多く回っている場合これ以上アカウント移行を行わない（無限ループ防止）
 	 */
 	@bindThis
-	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: IObject, movePreventUris: string[] = []): Promise<string | void> {
+	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: APTypes.IObject, movePreventUris: string[] = []): Promise<string | void> {
 		if (typeof uri !== 'string') throw new Error('uri is not string');
 
 		// URIがこのサーバーを指しているならスキップ
@@ -517,7 +517,7 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = getOneApHrefNullable(person.url);
+		const url = APTypes.getOneApHrefNullable(person.url);
 
 		if (url && !checkHttps(url)) {
 			throw new Error('unexpected schema of person url: ' + url);
@@ -527,13 +527,14 @@ export class ApPersonService implements OnModuleInit {
 			lastFetchedAt: new Date(),
 			inbox: person.inbox,
 			sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox,
-			followersUri: person.followers ? getApId(person.followers) : undefined,
+			followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
 			featured: person.featured,
 			emojis: emojiNames,
 			name: truncate(person.name, nameLength),
 			tags,
-			isBot: getApType(object) === 'Service' || getApType(object) === 'Application',
-			isCat: (person as any).isCat === true,
+			approved: true,
+			isBot: APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application',
+			isCat: (person as Partial<MiRemoteUser>).isCat === true,
 			isLocked: person.manuallyApprovesFollowers,
 			movedToUri: person.movedTo ?? null,
 			alsoKnownAs: person.alsoKnownAs ?? null,
@@ -652,11 +653,11 @@ export class ApPersonService implements OnModuleInit {
 
 	@bindThis
 	// TODO: `attachments`が`IObject`だった場合、返り値が`[]`になるようだが構わないのか？
-	public analyzeAttachments(attachments: IObject | IObject[] | undefined): Field[] {
+	public analyzeAttachments(attachments: APTypes.IObject | APTypes.IObject[] | undefined): Field[] {
 		const fields: Field[] = [];
 
 		if (Array.isArray(attachments)) {
-			for (const attachment of attachments.filter(isPropertyValue)) {
+			for (const attachment of attachments.filter(APTypes.isPropertyValue)) {
 				fields.push({
 					name: attachment.name,
 					value: this.mfmService.fromHtml(attachment.value),
@@ -679,16 +680,16 @@ export class ApPersonService implements OnModuleInit {
 
 		// Resolve to (Ordered)Collection Object
 		const collection = await _resolver.resolveCollection(user.featured);
-		if (!isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
+		if (!APTypes.isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
 
 		// Resolve to Object(may be Note) arrays
-		const unresolvedItems = isCollection(collection) ? collection.items : collection.orderedItems;
+		const unresolvedItems = APTypes.isCollection(collection) ? collection.items : collection.orderedItems;
 		const items = await Promise.all(toArray(unresolvedItems).map(x => _resolver.resolve(x)));
 
 		// Resolve and regist Notes
 		const limit = promiseLimit<MiNote | null>(2);
 		const featuredNotes = await Promise.all(items
-			.filter(item => getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
+			.filter(item => APTypes.getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
 			.slice(0, 5)
 			.map(item => limit(() => this.apNoteService.resolveNote(item, {
 				resolver: _resolver,
@@ -761,10 +762,10 @@ export class ApPersonService implements OnModuleInit {
 	}
 
 	@bindThis
-	private async isPublicCollection(collection: string | ICollection | IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
+	private async isPublicCollection(collection: string | APTypes.ICollection | APTypes.IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
 		if (collection) {
 			const resolved = await resolver.resolveCollection(collection);
-			if (resolved.first || (resolved as ICollection).items || (resolved as IOrderedCollection).orderedItems) {
+			if (resolved.first || (resolved as APTypes.ICollection).items || (resolved as APTypes.IOrderedCollection).orderedItems) {
 				return true;
 			}
 		}

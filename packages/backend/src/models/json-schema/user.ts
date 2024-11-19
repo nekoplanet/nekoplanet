@@ -62,6 +62,16 @@ export const packedUserLiteSchema = {
 			example: 'misskey.example.com',
 			description: 'The local host is represented with `null`.',
 		},
+		signupReason: {
+			type: 'string',
+			nullable: true, optional: true,
+			description: 'If signup approval is required, write here why you are signing in',
+		},
+		approved: {
+			type: 'boolean',
+			nullable: false, default: false,
+			description: 'User whom registeration is approved or not',
+		},
 		avatarUrl: {
 			type: 'string',
 			format: 'url',
@@ -388,6 +398,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 			nullable: false, optional: true,
 		},
 		securityKeys: {
+		approved: {
 			type: 'boolean',
 			nullable: false, optional: true,
 		},

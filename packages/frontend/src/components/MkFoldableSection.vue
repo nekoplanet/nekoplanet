@@ -61,6 +61,7 @@ function enter(el: Element) {
 	if (!(el instanceof HTMLElement)) return;
 	const elementHeight = el.getBoundingClientRect().height;
 	el.style.height = '0';
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	el.offsetHeight; // reflow
 	el.style.height = `${elementHeight}px`;
 }

@@ -282,7 +282,7 @@ async function onLoginSucceeded(res: Misskey.entities.SigninFlowResponse & { fin
 	}
 }
 
-function onSigninApiError(err?: any): void {
+function onSigninApiError(err?: Misskey.entities.Error): void {
 	const id = err?.id ?? null;
 
 	switch (id) {
@@ -304,6 +304,14 @@ function onSigninApiError(err?: any): void {
 		}
 		case 'e03a5f46-d309-4865-9b69-56282d94e1eb': {
 			showSuspendedDialog();
+			break;
+		}
+		case '2fe70810-0ed2-47db-a70b-dc3ecbf5f069': {
+			os.alert({
+				type: 'error',
+				title: i18n.ts.loginFailed,
+				text: i18n.ts.registerHasNotBeenApprovedYet,
+			});
 			break;
 		}
 		case '22d05606-fbcf-421a-a2db-b32610dcfd1b': {
