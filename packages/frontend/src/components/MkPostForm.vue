@@ -139,6 +139,7 @@ const props = withDefaults(defineProps<PostFormProps & {
 	fixed?: boolean;
 	autofocus?: boolean;
 	freezeAfterPosted?: boolean;
+	updateMode?: boolean;
 	mock?: boolean;
 	editMode?: boolean;
 }>(), {
@@ -704,7 +705,7 @@ function saveDraft() {
 			visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(x => x.id) : undefined,
 			quoteId: quoteId.value,
 			reactionAcceptance: reactionAcceptance.value,
-			noteId: props.editMode ? props.initialNote?.id : undefined,
+			noteId: props.updateMode ? props.initialNote?.id : undefined,
 		},
 	};
 
@@ -786,7 +787,7 @@ async function post(ev?: MouseEvent) {
 		visibility: visibility.value,
 		visibleUserIds: visibility.value === 'specified' ? visibleUsers.value.map(u => u.id) : undefined,
 		reactionAcceptance: reactionAcceptance.value,
-		noteId: props.editMode ? props.initialNote?.id : undefined,
+		noteId: props.updateMode ? props.initialNote?.id : undefined,
 	};
 
 	if (props.initialNote && props.editMode) {
@@ -830,7 +831,7 @@ async function post(ev?: MouseEvent) {
 	}
 
 	posting.value = true;
-	misskeyApi(props.editMode ? 'notes/update' : 'notes/create', postData, token).then(() => {
+	misskeyApi(props.updateMode ? 'notes/update' : 'notes/create', postData, token).then(() => {
 		if (props.freezeAfterPosted) {
 			posted.value = true;
 		} else {

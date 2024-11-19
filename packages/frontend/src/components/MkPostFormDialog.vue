@@ -11,15 +11,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { shallowRef } from 'vue';
+import type { PostFormProps } from '@/types/post-form.js';
 import MkModal from '@/components/MkModal.vue';
 import MkPostForm from '@/components/MkPostForm.vue';
-import type { PostFormProps } from '@/types/post-form.js';
 
 const props = withDefaults(defineProps<PostFormProps & {
 	instant?: boolean;
 	fixed?: boolean;
 	autofocus?: boolean;
-	editMode?: boolean;
+	updateMode?: boolean;
 }>(), {
 	initialLocalOnly: undefined,
 });
