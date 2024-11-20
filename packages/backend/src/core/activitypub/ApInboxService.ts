@@ -794,7 +794,7 @@ export class ApInboxService {
 			await this.updateNote(resolver, actor, object, false, activity);
 			return 'ok: Note updated';
 		} else if (getApType(object) === 'Question') {
-			await this.apQuestionService.updateQuestion(object, resolver).catch(err => console.error(err));
+			await this.apQuestionService.updateQuestion(object, actor, resolver).catch(err => console.error(err));
 			return 'ok: Question updated';
 		} else if (isPost(object) && object.additionalCc) {
 			const uri = getApId(object);
