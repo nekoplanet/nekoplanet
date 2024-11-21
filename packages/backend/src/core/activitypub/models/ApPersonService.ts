@@ -165,13 +165,16 @@ export class ApPersonService implements OnModuleInit {
 		}
 
 		for (const collection of ['outbox', 'followers', 'following'] as (keyof APTypes.IActor)[]) {
-			const collectionUri = APTypes.getApId(x[collection]);
-			if (typeof collectionUri === 'string' && collectionUri.length > 0) {
-				if (this.utilityService.punyHost(collectionUri) !== expectHost) {
-					throw new Error(`invalid Actor: ${collection} has different host`);
+			const xCollection = (x as APTypes.IActor)[collection];
+			if (xCollection != null) {
+				const collectionUri = APTypes.getApId(xCollection);
+				if (typeof collectionUri === 'string' && collectionUri.length > 0) {
+					if (this.utilityService.punyHost(collectionUri) !== expectHost) {
+						throw new Error(`invalid Actor: ${collection} has different host`);
+					}
+				} else if (collectionUri != null) {
+					throw new Error(`invalid Actor: wrong ${collection}`);
 				}
-			} else if (collectionUri != null) {
-				throw new Error(`invalid Actor: wrong ${collection}`);
 			}
 		}
 
