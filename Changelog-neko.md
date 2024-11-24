@@ -1,16 +1,11 @@
-## Unreleased (2024.9.0+neko.rc-2)
+## Unreleased (2024.11.0+neko.rc+user-approve)
 
 ### General
 - Feat: 사용자 등록을 승인제로 할 수 있도록
 (pull from 0e2e4c353f6d2fd2cc650007ec2f6a876acde8f7)
 
-### Frontend
-
-### Backend
-
-### misskey-js
-
-### develop
+## 2024.11.0+neko.rc
+독점 추가 기능 없음
 
 ## 2024.9.0+neko-rc
 
