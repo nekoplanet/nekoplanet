@@ -15,6 +15,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span class="name"><MkUserName class="name" :user="user"/></span>
 						<span class="sub"><span class="acct _monospace">@{{ acct(user) }}</span></span>
 						<span class="state">
+							<span v-if="!approved" class="silenced">{{ i18n.ts.notApproved }}</span>
+							<span v-if="approved && !user.host" class="moderator">{{ i18n.ts.approved }}</span>
 							<span v-if="suspended" class="suspended">Suspended</span>
 							<span v-if="silenced" class="silenced">Silenced</span>
 							<span v-if="moderator" class="moderator">Moderator</span>
@@ -53,6 +55,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<MkTextarea v-model="moderationNote" manualSave>
 					<template #label>{{ i18n.ts.moderationNote }}</template>
+					<template #caption>{{ i18n.ts.moderationNoteDescription }}</template>
 				</MkTextarea>
 
 				<!--
@@ -152,15 +155,21 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div v-else-if="tab === 'announcements'" class="_gaps">
 				<MkButton primary rounded @click="createAnnouncement"><i class="ti ti-plus"></i> {{ i18n.ts.new }}</MkButton>
 
+				<MkSelect v-model="announcementsStatus">
+					<template #label>{{ i18n.ts.filter }}</template>
+					<option value="active">{{ i18n.ts.active }}</option>
+					<option value="archived">{{ i18n.ts.archived }}</option>
+				</MkSelect>
+
 				<MkPagination :pagination="announcementsPagination">
 					<template #default="{ items }">
 						<div class="_gaps_s">
 							<div v-for="announcement in items" :key="announcement.id" v-panel :class="$style.announcementItem" @click="editAnnouncement(announcement)">
 								<span style="margin-right: 0.5em;">
 									<i v-if="announcement.icon === 'info'" class="ti ti-info-circle"></i>
-									<i v-else-if="announcement.icon === 'warning'" class="ti ti-alert-triangle" style="color: var(--warn);"></i>
-									<i v-else-if="announcement.icon === 'error'" class="ti ti-circle-x" style="color: var(--error);"></i>
-									<i v-else-if="announcement.icon === 'success'" class="ti ti-check" style="color: var(--success);"></i>
+									<i v-else-if="announcement.icon === 'warning'" class="ti ti-alert-triangle" style="color: var(--MI_THEME-warn);"></i>
+									<i v-else-if="announcement.icon === 'error'" class="ti ti-circle-x" style="color: var(--MI_THEME-error);"></i>
+									<i v-else-if="announcement.icon === 'success'" class="ti ti-check" style="color: var(--MI_THEME-success);"></i>
 								</span>
 								<span>{{ announcement.title }}</span>
 								<span v-if="announcement.reads > 0" style="margin-left: auto; opacity: 0.7;">{{ i18n.ts.messageRead }}</span>
@@ -205,6 +214,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import { url } from '@@/js/config.js';
 import MkChart from '@/components/MkChart.vue';
 import MkObjectView from '@/components/MkObjectView.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
@@ -220,7 +230,6 @@ import MkFileListForAdmin from '@/components/MkFileListForAdmin.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { url } from '@@/js/config.js';
 import { acct } from '@/filters/user.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
@@ -244,6 +253,7 @@ const ips = ref<Misskey.entities.AdminGetUserIpsResponse | null>(null);
 const ap = ref<any>(null);
 const moderator = ref(false);
 const silenced = ref(false);
+const approved = ref(false);
 const suspended = ref(false);
 const moderationNote = ref('');
 const filesPagination = {
@@ -253,11 +263,15 @@ const filesPagination = {
 		userId: props.userId,
 	})),
 };
+
+const announcementsStatus = ref<'active' | 'archived'>('active');
+
 const announcementsPagination = {
 	endpoint: 'admin/announcements/list' as const,
 	limit: 10,
 	params: computed(() => ({
 		userId: props.userId,
+		status: announcementsStatus.value,
 	})),
 };
 const expandedRoles = ref([]);
@@ -275,11 +289,12 @@ function createFetcher() {
 		ips.value = _ips;
 		moderator.value = info.value.isModerator;
 		silenced.value = info.value.isSilenced;
+		approved.value = info.value.approved;
 		suspended.value = info.value.isSuspended;
 		moderationNote.value = info.value.moderationNote;
 
 		watch(moderationNote, async () => {
-			await misskeyApi('admin/update-user-note', { userId: user.value.id, text: moderationNote.value });
+			await misskeyApi('admin/update-user-note', { userId: user.value!.id, text: moderationNote.value });
 			await refreshUser();
 		});
 	});
@@ -290,7 +305,7 @@ function refreshUser() {
 }
 
 async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
+	await os.apiWithDialog('federation/update-remote-user', { userId: user.value!.id });
 	refreshUser();
 }
 
@@ -303,7 +318,7 @@ async function resetPassword() {
 		return;
 	} else {
 		const { password } = await misskeyApi('admin/reset-password', {
-			userId: user.value.id,
+			userId: user.value!.id,
 		});
 		os.alert({
 			type: 'success',
@@ -320,7 +335,7 @@ async function toggleSuspend(v) {
 	if (confirm.canceled) {
 		suspended.value = !v;
 	} else {
-		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value.id });
+		await misskeyApi(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value!.id });
 		await refreshUser();
 	}
 }
@@ -332,7 +347,7 @@ async function unsetUserAvatar() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/unset-user-avatar', { userId: user.value.id });
+		await misskeyApi('admin/unset-user-avatar', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -351,7 +366,7 @@ async function unsetUserBanner() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/unset-user-banner', { userId: user.value.id });
+		await misskeyApi('admin/unset-user-banner', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -370,7 +385,7 @@ async function deleteAllFiles() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value.id });
+		await misskeyApi('admin/delete-all-files-of-a-user', { userId: user.value!.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -439,7 +454,7 @@ async function assignRole() {
 		: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
 		: null;
 
-	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value.id, expiresAt });
+	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value!.id, expiresAt });
 	refreshUser();
 }
 
@@ -449,7 +464,7 @@ async function unassignRole(role, ev) {
 		icon: 'ti ti-x',
 		danger: true,
 		action: async () => {
-			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value.id });
+			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value!.id });
 			refreshUser();
 		},
 	}], ev.currentTarget ?? ev.target);
@@ -488,7 +503,7 @@ watch(() => props.userId, () => {
 
 watch(user, () => {
 	misskeyApi('ap/get', {
-		uri: user.value.uri ?? `${url}/users/${user.value.id}`,
+		uri: user.value?.uri ?? `${url}/users/${user.value!.id}`,
 	}).then(res => {
 		ap.value = res;
 	});
@@ -581,18 +596,18 @@ definePageMetadata(() => ({
 			}
 
 			> .suspended {
-				color: var(--error);
-				border-color: var(--error);
+				color: var(--MI_THEME-error);
+				border-color: var(--MI_THEME-error);
 			}
 
 			> .silenced {
-				color: var(--warn);
-				border-color: var(--warn);
+				color: var(--MI_THEME-warn);
+				border-color: var(--MI_THEME-warn);
 			}
 
 			> .moderator {
-				color: var(--success);
-				border-color: var(--success);
+				color: var(--MI_THEME-success);
+				border-color: var(--MI_THEME-success);
 			}
 		}
 	}
@@ -611,11 +626,24 @@ definePageMetadata(() => ({
 		}
 	}
 }
+
+.casdwq {
+	.silenced {
+		color: var(--warn);
+		border-color: var(--warn);
+	}
+
+	.moderator {
+		color: var(--success);
+		border-color: var(--success);
+	}
+}
 </style>
 
 <style lang="scss" module>
 .ip {
 	display: flex;
+	word-break: break-all;
 
 	> :global(.date) {
 		opacity: 0.7;
@@ -639,7 +667,7 @@ definePageMetadata(() => ({
 .roleItemSub {
 	padding: 6px 12px;
 	font-size: 85%;
-	color: var(--fgTransparentWeak);
+	color: var(--MI_THEME-fgTransparentWeak);
 }
 
 .roleUnassign {

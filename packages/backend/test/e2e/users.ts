@@ -83,9 +83,6 @@ describe('ユーザー', () => {
 			publicReactions: user.publicReactions,
 			followingVisibility: user.followingVisibility,
 			followersVisibility: user.followersVisibility,
-			twoFactorEnabled: user.twoFactorEnabled,
-			usePasswordLessLogin: user.usePasswordLessLogin,
-			securityKeys: user.securityKeys,
 			roles: user.roles,
 			memo: user.memo,
 		});
@@ -149,8 +146,12 @@ describe('ユーザー', () => {
 			achievements: user.achievements,
 			loggedInDays: user.loggedInDays,
 			policies: user.policies,
+			twoFactorEnabled: user.twoFactorEnabled,
+			usePasswordLessLogin: user.usePasswordLessLogin,
+			securityKeys: user.securityKeys,
 			...(security ? {
 				email: user.email,
+				signupReason: user.signupReason,
 				emailVerified: user.emailVerified,
 				securityKeysList: user.securityKeysList,
 			} : {}),
@@ -305,7 +306,7 @@ describe('ユーザー', () => {
 		assert.strictEqual(response.name, null);
 		assert.strictEqual(response.username, 'zoe');
 		assert.strictEqual(response.host, null);
-		response.avatarUrl && assert.match(response.avatarUrl, /^[-a-zA-Z0-9@:%._\+~#&?=\/]+$/);
+		if (response.avatarUrl) assert.match(response.avatarUrl, /^[-a-zA-Z0-9@:%._\+~#&?=\/]+$/);
 		assert.strictEqual(response.avatarBlurhash, null);
 		assert.deepStrictEqual(response.avatarDecorations, []);
 		assert.strictEqual(response.isBot, false);
@@ -343,9 +344,6 @@ describe('ユーザー', () => {
 		assert.strictEqual(response.publicReactions, true);
 		assert.strictEqual(response.followingVisibility, 'public');
 		assert.strictEqual(response.followersVisibility, 'public');
-		assert.strictEqual(response.twoFactorEnabled, false);
-		assert.strictEqual(response.usePasswordLessLogin, false);
-		assert.strictEqual(response.securityKeys, false);
 		assert.deepStrictEqual(response.roles, []);
 		assert.strictEqual(response.memo, null);
 
@@ -385,7 +383,11 @@ describe('ユーザー', () => {
 		assert.deepStrictEqual(response.achievements, []);
 		assert.deepStrictEqual(response.loggedInDays, 0);
 		assert.deepStrictEqual(response.policies, DEFAULT_POLICIES);
+		assert.strictEqual(response.twoFactorEnabled, false);
+		assert.strictEqual(response.usePasswordLessLogin, false);
+		assert.strictEqual(response.securityKeys, false);
 		assert.notStrictEqual(response.email, undefined);
+		assert.notStrictEqual(response.signupReason, undefined);
 		assert.strictEqual(response.emailVerified, false);
 		assert.deepStrictEqual(response.securityKeysList, []);
 	});
@@ -618,6 +620,9 @@ describe('ユーザー', () => {
 		{ label: 'Moderatorになっている', user: () => userModerator, me: () => userModerator, selector: (user: misskey.entities.MeDetailed) => user.isModerator },
 		// @ts-expect-error UserDetailedNotMe doesn't include isModerator
 		{ label: '自分以外から見たときはModeratorか判定できない', user: () => userModerator, selector: (user: misskey.entities.UserDetailedNotMe) => user.isModerator, expected: () => undefined },
+		{ label: '自分から見た場合に二要素認証関連のプロパティがセットされている', user: () => alice, me: () => alice, selector: (user: misskey.entities.MeDetailed) => user.twoFactorEnabled, expected: () => false },
+		{ label: '自分以外から見た場合に二要素認証関連のプロパティがセットされていない', user: () => alice, me: () => bob, selector: (user: misskey.entities.UserDetailedNotMe) => user.twoFactorEnabled, expected: () => undefined },
+		{ label: 'モデレーターから見た場合に二要素認証関連のプロパティがセットされている', user: () => alice, me: () => userModerator, selector: (user: misskey.entities.UserDetailedNotMe) => user.twoFactorEnabled, expected: () => false },
 		{ label: 'サイレンスになっている', user: () => userSilenced, selector: (user: misskey.entities.UserDetailed) => user.isSilenced },
 		// FIXME: 落ちる
 		//{ label: 'サスペンドになっている', user: () => userSuspended, selector: (user: misskey.entities.UserDetailed) => user.isSuspended },

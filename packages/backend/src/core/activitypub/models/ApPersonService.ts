@@ -38,7 +38,8 @@ import { RoleService } from '@/core/RoleService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import type { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
-import { getApId, getApType, getOneApHrefNullable, isActor, isCollection, isCollectionOrOrderedCollection, isPropertyValue } from '../type.js';
+import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
+import * as APTypes from '../type.js';
 import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { ApNoteService } from './ApNoteService.js';
@@ -47,8 +48,6 @@ import type { ApResolverService, Resolver } from '../ApResolverService.js';
 import type { ApLoggerService } from '../ApLoggerService.js';
 
 import type { ApImageService } from './ApImageService.js';
-import type { IActor, ICollection, IObject, IOrderedCollection } from '../type.js';
-import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -132,22 +131,16 @@ export class ApPersonService implements OnModuleInit {
 		this.logger = this.apLoggerService.logger;
 	}
 
-	private punyHost(url: string): string {
-		const urlObj = new URL(url);
-		const host = `${this.utilityService.toPuny(urlObj.hostname)}${urlObj.port.length > 0 ? ':' + urlObj.port : ''}`;
-		return host;
-	}
-
 	/**
 	 * Validate and convert to actor object
 	 * @param x Fetched object
 	 * @param uri Fetch target URI
 	 */
 	@bindThis
-	private validateActor(x: IObject, uri: string): IActor {
-		const expectHost = this.punyHost(uri);
+	private validateActor(x: APTypes.IObject, uri: string): APTypes.IActor {
+		const expectHost = this.utilityService.punyHost(uri);
 
-		if (!isActor(x)) {
+		if (!APTypes.isActor(x)) {
 			throw new Error(`invalid Actor type '${x.type}'`);
 		}
 
@@ -157,6 +150,32 @@ export class ApPersonService implements OnModuleInit {
 
 		if (!(typeof x.inbox === 'string' && x.inbox.length > 0)) {
 			throw new Error('invalid Actor: wrong inbox');
+		}
+
+		if (this.utilityService.punyHost(x.inbox) !== expectHost) {
+			throw new Error('invalid Actor: inbox has different host');
+		}
+
+		const sharedInboxObject = x.sharedInbox ?? (x.endpoints ? x.endpoints.sharedInbox : undefined);
+		if (sharedInboxObject != null) {
+			const sharedInbox = APTypes.getApId(sharedInboxObject);
+			if (!(typeof sharedInbox === 'string' && sharedInbox.length > 0 && this.utilityService.punyHost(sharedInbox) === expectHost)) {
+				throw new Error('invalid Actor: wrong shared inbox');
+			}
+		}
+
+		for (const collection of ['outbox', 'followers', 'following'] as (keyof APTypes.IActor)[]) {
+			const xCollection = (x as APTypes.IActor)[collection];
+			if (xCollection != null) {
+				const collectionUri = APTypes.getApId(xCollection);
+				if (typeof collectionUri === 'string' && collectionUri.length > 0) {
+					if (this.utilityService.punyHost(collectionUri) !== expectHost) {
+						throw new Error(`invalid Actor: ${collection} has different host`);
+					}
+				} else if (collectionUri != null) {
+					throw new Error(`invalid Actor: wrong ${collection}`);
+				}
+			}
 		}
 
 		if (!(typeof x.preferredUsername === 'string' && x.preferredUsername.length > 0 && x.preferredUsername.length <= 128 && /^\w([\w-.]*\w)?$/.test(x.preferredUsername))) {
@@ -182,7 +201,7 @@ export class ApPersonService implements OnModuleInit {
 			x.summary = truncate(x.summary, summaryLength);
 		}
 
-		const idHost = this.punyHost(x.id);
+		const idHost = this.utilityService.punyHost(x.id);
 		if (idHost !== expectHost) {
 			throw new Error('invalid Actor: id has different host');
 		}
@@ -192,7 +211,7 @@ export class ApPersonService implements OnModuleInit {
 				throw new Error('invalid Actor: publicKey.id is not a string');
 			}
 
-			const publicKeyIdHost = this.punyHost(x.publicKey.id);
+			const publicKeyIdHost = this.utilityService.punyHost(x.publicKey.id);
 			if (publicKeyIdHost !== expectHost) {
 				throw new Error('invalid Actor: publicKey.id has different host');
 			}
@@ -235,6 +254,12 @@ export class ApPersonService implements OnModuleInit {
 		if (user == null) throw new Error('failed to create user: user is null');
 
 		const [avatar, banner] = await Promise.all([icon, image].map(img => {
+			// icon and image may be arrays
+			// see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-icon
+			if (Array.isArray(img)) {
+				img = img.find(item => item && item.url) ?? null;
+			}
+			
 			// if we have an explicitly missing image, return an
 			// explicitly-null set of values
 			if ((img == null) || (typeof img === 'object' && img.url == null)) {
@@ -277,7 +302,8 @@ export class ApPersonService implements OnModuleInit {
 	public async createPerson(uri: string, resolver?: Resolver): Promise<MiRemoteUser> {
 		if (typeof uri !== 'string') throw new Error('uri is not string');
 
-		if (uri.startsWith(this.config.url)) {
+		const host = this.utilityService.punyHost(uri);
+		if (host === this.utilityService.toPuny(this.config.host)) {
 			throw new StatusError('cannot resolve local user', 400, 'cannot resolve local user');
 		}
 
@@ -291,13 +317,11 @@ export class ApPersonService implements OnModuleInit {
 
 		this.logger.info(`Creating the Person: ${person.id}`);
 
-		const host = this.punyHost(object.id);
-
 		const fields = this.analyzeAttachments(person.attachment ?? []);
 
 		const tags = extractApHashtags(person.tag).map(normalizeForSearch).splice(0, 32);
 
-		const isBot = getApType(object) === 'Service' || getApType(object) === 'Application';
+		const isBot = APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application';
 
 		const [followingVisibility, followersVisibility] = await Promise.all(
 			[
@@ -316,10 +340,20 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = getOneApHrefNullable(person.url);
+		const url = APTypes.getOneApHrefNullable(person.url);
 
-		if (url && !checkHttps(url)) {
-			throw new Error('unexpected schema of person url: ' + url);
+		if (person.id == null) {
+			throw new Error('Refusing to create person without id');
+		}
+
+		if (url != null) {
+			if (!checkHttps(url)) {
+				throw new Error('unexpected schema of person url: ' + url);
+			}
+
+			if (this.utilityService.punyHost(url) !== this.utilityService.punyHost(person.id)) {
+				throw new Error(`person url <> uri host mismatch: ${url} <> ${person.id}`);
+			}
 		}
 
 		// Create user
@@ -349,16 +383,20 @@ export class ApPersonService implements OnModuleInit {
 					alsoKnownAs: person.alsoKnownAs,
 					isExplorable: person.discoverable,
 					username: person.preferredUsername,
+					approved: true,
 					usernameLower: person.preferredUsername?.toLowerCase(),
 					host,
 					inbox: person.inbox,
-					sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox,
-					followersUri: person.followers ? getApId(person.followers) : undefined,
-					featured: person.featured ? getApId(person.featured) : undefined,
+					sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null,
+					followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
+					featured: person.featured ? APTypes.getApId(person.featured) : undefined,
 					uri: person.id,
 					tags,
 					isBot,
-					isCat: (person as any).isCat === true,
+					isCat: (person as Partial<MiRemoteUser>).isCat === true,
+					requireSigninToViewContents: (person as any).requireSigninToViewContents === true,
+					makeNotesFollowersOnlyBefore: (person as any).makeNotesFollowersOnlyBefore ?? null,
+					makeNotesHiddenBefore: (person as any).makeNotesHiddenBefore ?? null,
 					emojis,
 				})) as MiRemoteUser;
 
@@ -411,13 +449,15 @@ export class ApPersonService implements OnModuleInit {
 		this.cacheService.uriPersonCache.set(user.uri, user);
 
 		// Register host
-		this.federatedInstanceService.fetch(host).then(i => {
-			this.instancesRepository.increment({ id: i.id }, 'usersCount', 1);
-			this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
-			if (this.meta.enableChartsForFederatedInstances) {
-				this.instanceChart.newUser(i.host);
-			}
-		});
+		if (this.meta.enableStatsForFederatedInstances) {
+			this.federatedInstanceService.fetchOrRegister(host).then(i => {
+				this.instancesRepository.increment({ id: i.id }, 'usersCount', 1);
+				if (this.meta.enableChartsForFederatedInstances) {
+					this.instanceChart.newUser(i.host);
+				}
+				this.fetchInstanceMetadataService.fetchInstanceMetadata(i);
+			});
+		}
 
 		this.usersChart.update(user, true);
 
@@ -455,11 +495,11 @@ export class ApPersonService implements OnModuleInit {
 	 * @param movePreventUris ここに指定されたURIがPersonのmovedToに指定されていたり10回より多く回っている場合これ以上アカウント移行を行わない（無限ループ防止）
 	 */
 	@bindThis
-	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: IObject, movePreventUris: string[] = []): Promise<string | void> {
+	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: APTypes.IObject, movePreventUris: string[] = []): Promise<string | void> {
 		if (typeof uri !== 'string') throw new Error('uri is not string');
 
 		// URIがこのサーバーを指しているならスキップ
-		if (uri.startsWith(`${this.config.url}/`)) return;
+		if (this.utilityService.isUriLocal(uri)) return;
 
 		//#region このサーバーに既に登録されているか
 		const exist = await this.fetchPerson(uri) as MiRemoteUser | null;
@@ -506,23 +546,34 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = getOneApHrefNullable(person.url);
+		const url = APTypes.getOneApHrefNullable(person.url);
 
-		if (url && !checkHttps(url)) {
-			throw new Error('unexpected schema of person url: ' + url);
+		if (person.id == null) {
+			throw new Error('Refusing to update person without id');
+		}
+
+		if (url != null) {
+			if (!checkHttps(url)) {
+				throw new Error('unexpected schema of person url: ' + url);
+			}
+
+			if (this.utilityService.punyHost(url) !== this.utilityService.punyHost(person.id)) {
+				throw new Error(`person url <> uri host mismatch: ${url} <> ${person.id}`);
+			}
 		}
 
 		const updates = {
 			lastFetchedAt: new Date(),
 			inbox: person.inbox,
-			sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox,
-			followersUri: person.followers ? getApId(person.followers) : undefined,
+			sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null,
+			followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
 			featured: person.featured,
 			emojis: emojiNames,
 			name: truncate(person.name, nameLength),
 			tags,
-			isBot: getApType(object) === 'Service' || getApType(object) === 'Application',
-			isCat: (person as any).isCat === true,
+			approved: true,
+			isBot: APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application',
+			isCat: (person as Partial<MiRemoteUser>).isCat === true,
 			isLocked: person.manuallyApprovesFollowers,
 			movedToUri: person.movedTo ?? null,
 			alsoKnownAs: person.alsoKnownAs ?? null,
@@ -589,7 +640,7 @@ export class ApPersonService implements OnModuleInit {
 		// 該当ユーザーが既にフォロワーになっていた場合はFollowingもアップデートする
 		await this.followingsRepository.update(
 			{ followerId: exist.id },
-			{ followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox },
+			{ followerSharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null },
 		);
 
 		await this.updateFeatured(exist.id, resolver).catch(err => this.logger.error(err));
@@ -641,11 +692,11 @@ export class ApPersonService implements OnModuleInit {
 
 	@bindThis
 	// TODO: `attachments`が`IObject`だった場合、返り値が`[]`になるようだが構わないのか？
-	public analyzeAttachments(attachments: IObject | IObject[] | undefined): Field[] {
+	public analyzeAttachments(attachments: APTypes.IObject | APTypes.IObject[] | undefined): Field[] {
 		const fields: Field[] = [];
 
 		if (Array.isArray(attachments)) {
-			for (const attachment of attachments.filter(isPropertyValue)) {
+			for (const attachment of attachments.filter(APTypes.isPropertyValue)) {
 				fields.push({
 					name: attachment.name,
 					value: this.mfmService.fromHtml(attachment.value),
@@ -668,16 +719,16 @@ export class ApPersonService implements OnModuleInit {
 
 		// Resolve to (Ordered)Collection Object
 		const collection = await _resolver.resolveCollection(user.featured);
-		if (!isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
+		if (!APTypes.isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
 
 		// Resolve to Object(may be Note) arrays
-		const unresolvedItems = isCollection(collection) ? collection.items : collection.orderedItems;
+		const unresolvedItems = APTypes.isCollection(collection) ? collection.items : collection.orderedItems;
 		const items = await Promise.all(toArray(unresolvedItems).map(x => _resolver.resolve(x)));
 
 		// Resolve and regist Notes
 		const limit = promiseLimit<MiNote | null>(2);
 		const featuredNotes = await Promise.all(items
-			.filter(item => getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
+			.filter(item => APTypes.getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
 			.slice(0, 5)
 			.map(item => limit(() => this.apNoteService.resolveNote(item, {
 				resolver: _resolver,
@@ -724,7 +775,7 @@ export class ApPersonService implements OnModuleInit {
 			await this.updatePerson(src.movedToUri, undefined, undefined, [...movePreventUris, src.uri]);
 			dst = await this.fetchPerson(src.movedToUri) ?? dst;
 		} else {
-			if (src.movedToUri.startsWith(`${this.config.url}/`)) {
+			if (this.utilityService.isUriLocal(src.movedToUri)) {
 				// ローカルユーザーっぽいのにfetchPersonで見つからないということはmovedToUriが間違っている
 				return 'failed: movedTo is local but not found';
 			}
@@ -750,10 +801,10 @@ export class ApPersonService implements OnModuleInit {
 	}
 
 	@bindThis
-	private async isPublicCollection(collection: string | ICollection | IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
+	private async isPublicCollection(collection: string | APTypes.ICollection | APTypes.IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
 		if (collection) {
 			const resolved = await resolver.resolveCollection(collection);
-			if (resolved.first || (resolved as ICollection).items || (resolved as IOrderedCollection).orderedItems) {
+			if (resolved.first || (resolved as APTypes.ICollection).items || (resolved as APTypes.IOrderedCollection).orderedItems) {
 				return true;
 			}
 		}
