@@ -99,8 +99,6 @@ type Source = {
 	perUserNotificationsMaxCount?: number;
 	deactivateAntennaThreshold?: number;
 	pidFile: string;
-
-	approvalRequiredForSignup: boolean;
 };
 
 export type Config = {
@@ -192,8 +190,6 @@ export type Config = {
 	perUserNotificationsMaxCount: number;
 	deactivateAntennaThreshold: number;
 	pidFile: string;
-
-	approvalRequiredForSignup: boolean;
 };
 
 const _filename = fileURLToPath(import.meta.url);
@@ -306,7 +302,6 @@ export function loadConfig(): Config {
 		deactivateAntennaThreshold: config.deactivateAntennaThreshold ?? (1000 * 60 * 60 * 24 * 7),
 		pidFile: config.pidFile,
 		skebStatus: undefined,
-		approvalRequiredForSignup: config.approvalRequiredForSignup,
 	};
 }
 

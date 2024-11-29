@@ -131,7 +131,7 @@ export class MetaEntityService {
 			noteSearchableScope: (this.config.meilisearch == null || this.config.meilisearch.scope !== 'local') ? 'global' : 'local',
 			maxFileSize: this.config.maxFileSize,
 
-			approvalRequiredForSignup: this.config.approvalRequiredForSignup,
+			approvalRequiredForSignup: instance.approvalRequiredForSignup,
 		};
 
 		return packed;
