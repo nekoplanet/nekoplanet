@@ -21,6 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #label>{{ i18n.ts.state }}</template>
 						<option value="all">{{ i18n.ts.all }}</option>
 						<option value="available">{{ i18n.ts.normal }}</option>
+						<option value="approved">{{ i18n.ts.notApproved }}</option>
 						<option value="admin">{{ i18n.ts.administrator }}</option>
 						<option value="moderator">{{ i18n.ts.moderator }}</option>
 						<option value="suspended">{{ i18n.ts.suspend }}</option>
@@ -99,19 +100,19 @@ async function addUser() {
 	const { canceled: canceled1, result: username } = await os.inputText({
 		title: i18n.ts.username,
 	});
-	if (canceled1) return;
+	if (canceled1 || username == null) return;
 
 	const { canceled: canceled2, result: password } = await os.inputText({
 		title: i18n.ts.password,
 		type: 'password',
 	});
-	if (canceled2) return;
+	if (canceled2 || password == null) return;
 
 	os.apiWithDialog('admin/accounts/create', {
 		username: username,
 		password: password,
 	}).then(res => {
-		paginationComponent.value.reload();
+		paginationComponent.value?.reload();
 	});
 }
 

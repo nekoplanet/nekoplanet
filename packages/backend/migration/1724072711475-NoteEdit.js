@@ -11,6 +11,6 @@ export class NoteEdit1724072711475 {
 	}
 
 	async down(queryRunner) {
-		await queryRunner.query(`ALTER TABLE "note" DROP COLUMN IF EXISTS "updatedAt"`);
+		await queryRunner.query(`ALTER TABLE "note" DROP COLUMN "updatedAt"`);
 	}
 }

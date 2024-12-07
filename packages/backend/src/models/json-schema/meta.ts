@@ -79,6 +79,10 @@ export const packedMetaLiteSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		approvalRequiredForSignup: {
+			type: 'boolean',
+			optional: false, default: false,
+		},
 		enableHcaptcha: {
 			type: 'boolean',
 			optional: false, nullable: false,
@@ -114,6 +118,10 @@ export const packedMetaLiteSchema = {
 		turnstileSiteKey: {
 			type: 'string',
 			optional: false, nullable: true,
+		},
+		enableTestcaptcha: {
+			type: 'boolean',
+			optional: false, nullable: false,
 		},
 		swPublickey: {
 			type: 'string',

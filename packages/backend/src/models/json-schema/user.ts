@@ -62,6 +62,16 @@ export const packedUserLiteSchema = {
 			example: 'misskey.example.com',
 			description: 'The local host is represented with `null`.',
 		},
+		signupReason: {
+			type: 'string',
+			nullable: true, optional: true,
+			description: 'If signup approval is required, write here why you are signing in',
+		},
+		approved: {
+			type: 'boolean',
+			nullable: false, default: false,
+			description: 'User whom registeration is approved or not',
+		},
 		avatarUrl: {
 			type: 'string',
 			format: 'url',
@@ -114,6 +124,18 @@ export const packedUserLiteSchema = {
 		isCat: {
 			type: 'boolean',
 			nullable: false, optional: true,
+		},
+		requireSigninToViewContents: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
+		makeNotesFollowersOnlyBefore: {
+			type: 'number',
+			nullable: true, optional: true,
+		},
+		makeNotesHiddenBefore: {
+			type: 'number',
+			nullable: true, optional: true,
 		},
 		instance: {
 			type: 'object',
@@ -346,21 +368,6 @@ export const packedUserDetailedNotMeOnlySchema = {
 			nullable: false, optional: false,
 			enum: ['public', 'followers', 'private'],
 		},
-		twoFactorEnabled: {
-			type: 'boolean',
-			nullable: false, optional: false,
-			default: false,
-		},
-		usePasswordLessLogin: {
-			type: 'boolean',
-			nullable: false, optional: false,
-			default: false,
-		},
-		securityKeys: {
-			type: 'boolean',
-			nullable: false, optional: false,
-			default: false,
-		},
 		roles: {
 			type: 'array',
 			nullable: false, optional: false,
@@ -380,6 +387,22 @@ export const packedUserDetailedNotMeOnlySchema = {
 		},
 		moderationNote: {
 			type: 'string',
+			nullable: false, optional: true,
+		},
+		twoFactorEnabled: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
+		usePasswordLessLogin: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
+		securityKeys: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
+		approved: {
+			type: 'boolean',
 			nullable: false, optional: true,
 		},
 		//#region relations
@@ -426,6 +449,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 		},
 		//#endregion
 	},
+	
 } as const;
 
 export const packedMeDetailedOnlySchema = {
@@ -629,6 +653,21 @@ export const packedMeDetailedOnlySchema = {
 			type: 'object',
 			nullable: false, optional: false,
 			ref: 'RolePolicies',
+		},
+		twoFactorEnabled: {
+			type: 'boolean',
+			nullable: false, optional: false,
+			default: false,
+		},
+		usePasswordLessLogin: {
+			type: 'boolean',
+			nullable: false, optional: false,
+			default: false,
+		},
+		securityKeys: {
+			type: 'boolean',
+			nullable: false, optional: false,
+			default: false,
 		},
 		//#region secrets
 		email: {

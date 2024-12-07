@@ -26,6 +26,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				].includes(log.type),
 				[$style.logRed]: [
 					'suspend',
+					'approve',
 					'deleteRole',
 					'deleteGlobalAnnouncement',
 					'deleteUserAnnouncement',
@@ -45,6 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		>{{ i18n.ts._moderationLogTypes[log.type] }}</b>
 		<span v-if="log.type === 'updateUserNote'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</span>
 		<span v-else-if="log.type === 'suspend'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</span>
+		<span v-else-if="log.type === 'approve'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</span>
 		<span v-else-if="log.type === 'unsuspend'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</span>
 		<span v-else-if="log.type === 'resetPassword'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</span>
 		<span v-else-if="log.type === 'assignRole'">: @{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }} <i class="ti ti-arrow-right"></i> {{ log.info.roleName }}</span>
@@ -89,7 +91,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</template>
 
 	<div>
-		<div style="display: flex; gap: var(--margin); flex-wrap: wrap;">
+		<div style="display: flex; gap: var(--MI-margin); flex-wrap: wrap;">
 			<div style="flex: 1;">{{ i18n.ts.moderator }}: <MkA :to="`/admin/user/${log.userId}`" class="_link">@{{ log.user?.username }}</MkA></div>
 			<div style="flex: 1;">{{ i18n.ts.dateAndTime }}: <MkTime :time="log.createdAt" mode="detail"/></div>
 		</div>
@@ -106,6 +108,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</template>
 		<template v-else-if="log.type === 'suspend'">
+			<div>{{ i18n.ts.user }}: <MkA :to="`/admin/user/${log.info.userId}`" class="_link">@{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</MkA></div>
+		</template>
+		<template v-else-if="log.type === 'approve'">
 			<div>{{ i18n.ts.user }}: <MkA :to="`/admin/user/${log.info.userId}`" class="_link">@{{ log.info.userUsername }}{{ log.info.userHost ? '@' + log.info.userHost : '' }}</MkA></div>
 		</template>
 		<template v-else-if="log.type === 'unsuspend'">
@@ -165,6 +170,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<CodeDiff :context="5" :hideHeader="true" :oldString="JSON5.stringify(log.info.before, null, '\t')" :newString="JSON5.stringify(log.info.after, null, '\t')" language="javascript" maxHeight="300px"/>
 			</div>
 		</template>
+		<template v-else-if="log.type === 'updateAbuseReportNote'">
+			<div :class="$style.diff">
+				<CodeDiff :context="5" :hideHeader="true" :oldString="log.info.before ?? ''" :newString="log.info.after ?? ''" maxHeight="300px"/>
+			</div>
+		</template>
 
 		<details>
 			<summary>raw</summary>
@@ -200,14 +210,14 @@ const props = defineProps<{
 }
 
 .logYellow {
-	color: var(--warn);
+	color: var(--MI_THEME-warn);
 }
 
 .logRed {
-	color: var(--error);
+	color: var(--MI_THEME-error);
 }
 
 .logGreen {
-	color: var(--success);
+	color: var(--MI_THEME-success);
 }
 </style>
