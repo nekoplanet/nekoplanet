@@ -261,6 +261,7 @@ export type SignupRequest = {
 	'g-recaptcha-response'?: string | null;
 	'turnstile-response'?: string | null;
 	'm-captcha-response'?: string | null;
+	reason?: string | null;
 }
 
 export type SignupResponse = MeDetailed & {

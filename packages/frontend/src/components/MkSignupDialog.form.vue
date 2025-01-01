@@ -270,6 +270,7 @@ async function onSubmit(): Promise<void> {
 		'g-recaptcha-response': reCaptchaResponse.value,
 		'turnstile-response': turnstileResponse.value,
 		'testcaptcha-response': testcaptchaResponse.value,
+		reason: reason.value,
 	};
 
 	const res = await fetch(`${config.apiUrl}/signup`, {
