@@ -200,6 +200,14 @@ function onChange_emailRequiredForSignup(value: boolean) {
 	});
 }
 
+function changeApprovalRequiredForSignup(value: boolean) {
+	os.apiWithDialog('admin/update-meta', {
+	  approvalRequiredForSignup: value,
+	}).then(() => {
+		fetchInstance(true);
+	});
+}
+
 function onChange_approvalRequiredForSignup(value: boolean) {
   if (!value) {
     misskeyApi('admin/show-users', {
@@ -219,14 +227,6 @@ function onChange_approvalRequiredForSignup(value: boolean) {
 	}
 	changeApprovalRequiredForSignup(value);
 }
-
-changeApprovalRequiredForSignup((value: boolean) => {
-	os.apiWithDialog('admin/update-meta', {
-	  approvalRequiredForSignup: value,
-	}).then(() => {
-		fetchInstance(true);
-	});
-});
 
 function save_preservedUsernames() {
 	os.apiWithDialog('admin/update-meta', {
