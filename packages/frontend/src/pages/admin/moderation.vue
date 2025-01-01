@@ -201,12 +201,32 @@ function onChange_emailRequiredForSignup(value: boolean) {
 }
 
 function onChange_approvalRequiredForSignup(value: boolean) {
+  if (!value) {
+    misskeyApi('admin/show-users', {
+    	state: 'waitingForApproval',
+    	origin: 'local',
+    	limit: 1,
+    }).then(approvals => {
+			if (approvals.length > 0) {
+				os.alert({
+			    type: 'error',
+			    text: i18n.ts.clearPendingApprovalsFirst,
+				});
+			} else {
+	      changeApprovalRequiredForSignup(value);
+			}
+    });
+	}
+	changeApprovalRequiredForSignup(value);
+}
+
+changeApprovalRequiredForSignup((value: boolean) => {
 	os.apiWithDialog('admin/update-meta', {
 	  approvalRequiredForSignup: value,
 	}).then(() => {
 		fetchInstance(true);
 	});
-}
+});
 
 function save_preservedUsernames() {
 	os.apiWithDialog('admin/update-meta', {
