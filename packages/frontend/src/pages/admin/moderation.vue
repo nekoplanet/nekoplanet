@@ -220,6 +220,7 @@ function onChange_approvalRequiredForSignup(value: boolean) {
 			    type: 'error',
 			    text: i18n.ts.clearPendingApprovalsFirst,
 				});
+				approvalRequiredForSignup.value = true;
 			} else {
 	      changeApprovalRequiredForSignup(value);
 			}
