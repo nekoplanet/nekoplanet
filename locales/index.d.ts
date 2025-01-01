@@ -3671,6 +3671,10 @@ export interface Locale extends ILocale {
      */
     "approvalRequiredForSignup": string;
     /**
+     * Clear pending approvals before disabling approval.
+     */
+		"clearPendingApprovalsFirst": string;
+    /**
      * アカウント登録の承認
      */
     "signupPendingApprovals": string;

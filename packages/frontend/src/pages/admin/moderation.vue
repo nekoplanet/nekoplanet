@@ -224,8 +224,9 @@ function onChange_approvalRequiredForSignup(value: boolean) {
 	      changeApprovalRequiredForSignup(value);
 			}
     });
+	} else {
+	  changeApprovalRequiredForSignup(value);
 	}
-	changeApprovalRequiredForSignup(value);
 }
 
 function save_preservedUsernames() {
