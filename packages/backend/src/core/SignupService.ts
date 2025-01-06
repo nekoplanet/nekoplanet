@@ -131,6 +131,9 @@ export class SignupService {
 				host: this.utilityService.toPunyNullable(host),
 				token: secret,
 				isRoot: isTheFirstUser,
+				// Approve the root user automatically
+				// Approve the user if approval is not required
+				approved: isTheFirstUser || !this.meta.approvalRequiredForSignup,
 				signupReason: opts.reason,
 			}));
 
