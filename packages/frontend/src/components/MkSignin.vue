@@ -308,7 +308,7 @@ function onSigninApiError(err?: Misskey.entities.Error): void {
 		}
 		case '2fe70810-0ed2-47db-a70b-dc3ecbf5f069': {
 			os.alert({
-				type: 'error',
+				type: 'info', // Not approved is not user's fault nor error: set error type as 'info'
 				title: i18n.ts.loginFailed,
 				text: i18n.ts.registerHasNotBeenApprovedYet,
 			});

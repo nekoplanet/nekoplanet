@@ -3671,6 +3671,10 @@ export interface Locale extends ILocale {
      */
     "approvalRequiredForSignup": string;
     /**
+     * 承認手続きを無効にするには、最初に承認待ちの申請をすべて処理する必要があります。
+     */
+    "clearPendingApprovalsFirst": string;
+    /**
      * アカウント登録の承認
      */
     "signupPendingApprovals": string;
