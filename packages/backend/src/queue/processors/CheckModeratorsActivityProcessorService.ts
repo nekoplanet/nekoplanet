@@ -117,10 +117,10 @@ export class CheckModeratorsActivityProcessorService {
 		this.logger.info('start.');
 
 		const meta = await this.metaService.fetch(false);
-		if (!meta.disableRegistration) {
+		if (!meta.disableRegistration && !meta.approvalRequiredForSignup) {
 			await this.processImpl();
 		} else {
-			this.logger.info('is already invitation only.');
+			this.logger.info('is already invitation only or approval required');
 		}
 
 		this.logger.succ('finish.');
