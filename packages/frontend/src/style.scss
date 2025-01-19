@@ -6,16 +6,25 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/**region webfont:omyu_preety, Fafo Sans, M+ Rounded 1c */
+/* install custom web font */
+
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
 
 @font-face {
-    // Override
     font-family: 'M PLUS Rounded 1c';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
-    font-weight: normal;
     font-style: normal;
+    font-weight: 400;
+    size-adjust: 130%;
+    font-display: swap;
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
     unicode-range: U+20-7E, U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
 }
+
+html {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+/**endregion webfont:omyu_preety, M+ Rounded 1c */
 
 :root {
 	--MI-radius: 12px;
