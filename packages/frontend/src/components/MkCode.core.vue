@@ -78,7 +78,7 @@ watch(() => props.lang, (to) => {
 	overflow: auto;
 	border-radius: 8px;
 	border: 1px solid var(--MI_THEME-divider);
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: Monaspace Argon, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 
 	color: var(--shiki-fallback);
 	background-color: var(--shiki-fallback-bg);
@@ -90,7 +90,7 @@ watch(() => props.lang, (to) => {
 
 	& pre,
 	& code {
-		font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+		font-family: Monaspace Argon, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 	}
 }
 

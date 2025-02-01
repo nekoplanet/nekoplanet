@@ -163,7 +163,7 @@ watch(v, newValue => {
 	color: var(--MI_THEME-fg);
 	border: solid 1px var(--MI_THEME-panel);
 	transition: border-color 0.1s ease-out;
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: Monaspace Argon, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 	&:hover {
 		border-color: var(--MI_THEME-inputBorderHover) !important;
 	}
@@ -207,7 +207,7 @@ watch(v, newValue => {
 	padding: 12px;
 	line-height: 1.5em;
 	font-size: 1em;
-	font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+	font-family: Monaspace Argon, Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
 }
 
 .textarea::selection {

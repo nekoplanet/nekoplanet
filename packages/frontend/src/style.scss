@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-/**region webfont:omyu_preety, Fafo Sans, M+ Rounded 1c */
+/**region webfont:omyu_preety, M+ Rounded 1c */
 /* install custom web font */
 
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400&display=swap');
@@ -25,6 +25,29 @@ html {
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 /**endregion webfont:omyu_preety, M+ Rounded 1c */
+
+/**region webfont:monaspace, d2coding */
+@font-face {
+	font-family: 'Monaspace Argon';
+	font-style: normal;
+	font-weight: 400;
+	font-variation-settings: 'wdth' 100;
+
+	font-display: swap;
+	src: url('https://cdn.jsdelivr.net/gh/githubnext/monaspace@1.101/fonts/webfonts/MonaspaceArgon-Regular.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Monaspace Argon';
+	font-style: normal;
+	font-weight: 400;
+	size-adjust: 124%;
+
+	font-display: swap;
+	src: url('https://cdn.jsdelivr.net/gh/Joungkyun/font-d2coding@1.3.2/D2Coding.woff2') format('woff2');
+	unicode-range: U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
+}
+/**endregion webfont:monaspace, d2coding */
 
 :root {
 	--MI-radius: 12px;
@@ -452,7 +475,7 @@ rt {
 }
 
 ._monospace {
-	font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace !important;
+	font-family: Monaspace Argon, Fira code, Fira Mono, Consolas, Menlo, Courier, monospace !important;
 }
 
 ._zoom {
