@@ -66,7 +66,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				case 'suspended': query.where('user.isSuspended = TRUE'); break;
 				case 'approved': query.where('user.approved = TRUE'); break;
 				case 'pending': query.where('user.approved = FALSE'); break;
-				case 'approved': query.where('user.approved = TRUE'); break;
 				case 'waitingForApproval': query.where('user.approved = FALSE'); break;
 				case 'admin': {
 					const adminIds = await this.roleService.getAdministratorIds();

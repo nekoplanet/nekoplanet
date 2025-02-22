@@ -122,13 +122,6 @@ export class UtilityService {
 	}
 
 	@bindThis
-	public punyHost(url: string): string {
-		const urlObj = new URL(url);
-		const host = `${this.toPuny(urlObj.hostname)}${urlObj.port.length > 0 ? ':' + urlObj.port : ''}`;
-		return host;
-	}
-
-	@bindThis
 	public isFederationAllowedHost(host: string): boolean {
 		if (this.meta.federation === 'none') return false;
 		if (this.meta.federation === 'specified' && !this.meta.federationHosts.some(x => `.${host.toLowerCase()}`.endsWith(`.${x}`))) return false;

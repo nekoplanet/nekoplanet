@@ -5412,10 +5412,6 @@ export interface Locale extends ILocale {
         "resolveTutorial": string;
     };
     /**
-     * 編集済み: {date} {time}
-     */
-    "noteUpdatedAt": ParameterizedString<"date" | "time">;
-    /**
      * 修正履歴
      */
     "editHistory": string;

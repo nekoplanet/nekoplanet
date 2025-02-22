@@ -1673,7 +1673,6 @@ declare namespace entities {
         NotesConversationResponse,
         NotesCreateRequest,
         NotesCreateResponse,
-        NotesUpdateRequest,
         NotesDeleteRequest,
         NotesFavoritesCreateRequest,
         NotesFavoritesDeleteRequest,
@@ -3170,11 +3169,11 @@ type SignupRequest = {
     host?: string;
     invitationCode?: string;
     emailAddress?: string;
-    reason?: string;
     'hcaptcha-response'?: string | null;
     'g-recaptcha-response'?: string | null;
     'turnstile-response'?: string | null;
     'm-captcha-response'?: string | null;
+    reason?: string | null;
 };
 
 // @public (undocumented)

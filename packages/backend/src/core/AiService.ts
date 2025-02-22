@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 import { Injectable } from '@nestjs/common';
-import { default as nsfw } from 'nsfwjs';
+import * as nsfw from 'nsfwjs';
 import { Tensor3D } from '@tensorflow/tfjs-core';
 import si from 'systeminformation';
 import { Mutex } from 'async-mutex';
