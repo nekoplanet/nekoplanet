@@ -7,8 +7,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-if="meta" class="rsqzvsbo">
 	<MkFeaturedPhotos class="bg"/>
 	<XTimeline class="tl"/>
-	<div class="shape1"></div>
-	<div class="shape2"></div>
 	<div class="logo-wrapper">
 		<div class="powered-by">Powered by</div>
 		<img :src="misskeysvg" class="misskey"/>
@@ -53,12 +51,14 @@ function getInstanceIcon(instance: Misskey.entities.FederationInstance): string 
 	if (!instance.iconUrl) {
 		return '';
 	}
+
 	return getProxiedImageUrl(instance.iconUrl, 'preview');
 }
 
 misskeyApiGet('federation/instances', {
 	sort: '+pubSub',
 	limit: 20,
+	blocked: 'false',
 }).then(_instances => {
 	instances.value = _instances;
 });
@@ -70,7 +70,7 @@ misskeyApiGet('federation/instances', {
 		position: fixed;
 		top: 0;
 		right: 0;
-		width: 80vw; // 100%からshapeの幅を引いている
+		width: 100vw; // 100%からshapeの幅を引いている
 		height: 100vh;
 	}
 

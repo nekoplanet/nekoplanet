@@ -44,7 +44,7 @@ export class MiNote {
 	public replyId: MiNote['id'] | null;
 
 	@ManyToOne(type => MiNote, {
-		onDelete: 'CASCADE',
+		onDelete: 'SET NULL',
 	})
 	@JoinColumn()
 	public reply: MiNote | null;
@@ -255,6 +255,11 @@ export class MiNote {
 		comment: '[Denormalized]',
 	})
 	public renoteUserHost: string | null;
+
+	@Column('timestamp with time zone', {
+		default: null,
+	})
+	public updatedAt: Date | null;
 	//#endregion
 
 	constructor(data: Partial<MiNote>) {

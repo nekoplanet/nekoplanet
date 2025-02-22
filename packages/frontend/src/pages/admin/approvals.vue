@@ -37,7 +37,8 @@ const pagination = {
 	limit: 10,
 	params: computed(() => ({
 		sort: '+createdAt',
-		state: 'waitingForApproval',
+		//state: 'waitingForApproval',
+		state: 'pending',
 		origin: 'local',
 	})),
 	offsetMode: true,

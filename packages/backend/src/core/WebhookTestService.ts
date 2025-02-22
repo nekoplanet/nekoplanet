@@ -134,7 +134,7 @@ function generateDummyNote(override?: Partial<MiNote>): MiNote {
 		renoteUserId: null,
 		renoteUserHost: null,
 		createdAt: new Date(),
-		updatedAt: null,
+		updatedAt: new Date(),
 		updatedAtHistory: null,
 		noteEditHistory: [],
 		...override,

@@ -6,7 +6,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { NotesRepository, PollsRepository, EmojisRepository, MiMeta } from '@/models/_.js';
+import type { PollsRepository, EmojisRepository, MiMeta, NotesRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiRemoteUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
@@ -503,6 +503,8 @@ export class ApNoteService {
 						originalUrl: tag.icon.url,
 						publicUrl: tag.icon.url,
 						updatedAt: new Date(),
+						// _misskey_license が存在しなければ `null`
+						license: (tag._misskey_license?.freeText ?? null)
 					});
 
 					const emoji = await this.emojisRepository.findOneBy({ host, name });
@@ -524,6 +526,8 @@ export class ApNoteService {
 				publicUrl: tag.icon.url,
 				updatedAt: new Date(),
 				aliases: [],
+				// _misskey_license が存在しなければ `null`
+				license: (tag._misskey_license?.freeText ?? null)
 			});
 		}));
 	}

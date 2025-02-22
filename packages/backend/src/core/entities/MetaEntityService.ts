@@ -132,6 +132,7 @@ export class MetaEntityService {
 			maxFileSize: this.config.maxFileSize,
 
 			approvalRequiredForSignup: instance.approvalRequiredForSignup,
+			federation: this.meta.federation,
 		};
 
 		return packed;

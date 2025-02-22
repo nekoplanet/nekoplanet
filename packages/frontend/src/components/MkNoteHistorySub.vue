@@ -62,6 +62,7 @@ import * as Misskey from 'misskey-js';
 import { CodeDiff } from 'v-code-diff';
 import { userPage } from '@/filters/user.js';
 import { i18n } from '@/i18n.js';
+import MkMediaList from '@/components/MkMediaList.vue';
 
 const props = defineProps<{
 	oldNote: Misskey.entities.NoteHistory | null;

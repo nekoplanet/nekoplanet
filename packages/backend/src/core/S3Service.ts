@@ -7,7 +7,7 @@ import { URL } from 'node:url';
 import * as http from 'node:http';
 import * as https from 'node:https';
 import { Injectable } from '@nestjs/common';
-import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, ListObjectsCommand, S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { NodeHttpHandler, NodeHttpHandlerOptions } from '@smithy/node-http-handler';
 import { bindThis } from '@/decorators.js';
@@ -15,7 +15,7 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { MiMeta } from '@/models/Meta.js';
 import { HttpRequestService } from '@/core/HttpRequestService.js';
-import type { DeleteObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import type { DeleteObjectCommandInput, ListObjectsCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class S3Service {
@@ -30,7 +30,7 @@ export class S3Service {
 			? `${meta.objectStorageUseSSL ? 'https' : 'http'}://${meta.objectStorageEndpoint}`
 			: `${meta.objectStorageUseSSL ? 'https' : 'http'}://example.net`; // dummy url to select http(s) agent
 
-		const agent = this.httpRequestService.getAgentByUrl(new URL(u), !meta.objectStorageUseProxy);
+		const agent = this.httpRequestService.getAgentByUrl(new URL(u), !meta.objectStorageUseProxy, true);
 		const handlerOption: NodeHttpHandlerOptions = {};
 		if (meta.objectStorageUseSSL) {
 			handlerOption.httpsAgent = agent as https.Agent;
@@ -67,5 +67,10 @@ export class S3Service {
 	public delete(meta: MiMeta, input: DeleteObjectCommandInput) {
 		const client = this.getS3Client(meta);
 		return client.send(new DeleteObjectCommand(input));
+	}
+
+	@bindThis list(meta: MiMeta, input: ListObjectsCommandInput) {
+		const client = this.getS3Client(meta);
+		return client.send(new ListObjectsCommand(input));
 	}
 }
