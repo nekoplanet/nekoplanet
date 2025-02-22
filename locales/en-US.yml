@@ -1944,6 +1944,8 @@ _aboutMisskey:
   morePatrons: "We also appreciate the support of many other helpers not listed here. Thank you! 🥰"
   patrons: "Patrons"
   projectMembers: "Project members"
+  projectMembersNeko: "Nekoplanet Council"
+  officialContact: "Please send all the questions into this account!"
 _displayOfSensitiveMedia:
   respect: "Hide media marked as sensitive"
   ignore: "Display media marked as sensitive"

@@ -7562,6 +7562,14 @@ export interface Locale extends ILocale {
          * プロジェクトメンバー
          */
         "projectMembers": string;
+        /**
+         * ねこぷらねっと評議会
+         */
+        "projectMembersNeko": string;
+        /**
+         * ねこぷらねっと関連の質問はすべてここにしてください！
+         */
+        "officialContact": string;
     };
     "_displayOfSensitiveMedia": {
         /**

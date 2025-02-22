@@ -1945,6 +1945,8 @@ _aboutMisskey:
   morePatrons: "이 외에도 다른 많은 분들이 도움을 주시고 계십니다. 감사합니다🥰"
   patrons: "후원자"
   projectMembers: "프로젝트 구성원"
+  projectMembersNeko: "고양이별 은하수 교단"
+  officialContact: "고양이별 관련 모든 질문은 여기에 해주세요!"
 _displayOfSensitiveMedia:
   respect: "민감한 콘텐츠로 표시된 미디어 숨기기"
   ignore: "민감한 콘텐츠로 표시된 미디어 보이기"

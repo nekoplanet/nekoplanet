@@ -1970,6 +1970,8 @@ _aboutMisskey:
   morePatrons: "他にも多くの方が支援してくれています。ありがとうございます🥰"
   patrons: "支援者"
   projectMembers: "プロジェクトメンバー"
+  projectMembersNeko: "ねこぷらねっと評議会"
+  officialContact: "ねこぷらねっと関連の質問はすべてここにしてください！"
 
 _displayOfSensitiveMedia:
   respect: "センシティブ設定されたメディアを隠す"
