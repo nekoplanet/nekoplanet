@@ -6,6 +6,9 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+/** This file is seperated since it's too big */
+@import url('https://fastly.jsdelivr.net/gh/nekoplanet/css-zip@1.1/korean-unicode-charset.css');
+
 /**region webfont:NPS, M+ Rounded 1c */
 /* install custom web font */
 
@@ -17,7 +20,7 @@
 	font-weight: 400;
 	font-display: swap;
 	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2310@1.0/NPSfontRegular.woff2') format('woff2');
-	unicode-range: U+20-7E, U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
+	unicode-range: U+20-7E, U+3130-318E, var(--ko-ksc6501-uni), U+4E00-9FAF;
 }
 
 @font-face {
@@ -26,7 +29,7 @@
 	font-weight: 700;
 	font-display: swap;
 	src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2310@1.0/NPSfontBold.woff2') format('woff2');
-	unicode-range: U+20-7E, U+3130-318E, U+AC00-D7A3, U+4E00-9FAF;
+	unicode-range: U+20-7E, U+3130-318E, var(--ko-ksc6501-uni), U+4E00-9FAF;
 }
 /**endregion webfont:NPS, M+ Rounded 1c */
 
