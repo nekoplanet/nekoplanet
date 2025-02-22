@@ -291,8 +291,8 @@ importers:
         specifier: 0.45.0
         version: 0.45.0
       mfm-js:
-        specifier: github:nekoplanet/mfm.js#neko-241023
-        version: https://codeload.github.com/nekoplanet/mfm.js/tar.gz/c270d9a24e9cc0777d61121cb7d85b68c10d2974
+        specifier: 0.24.0
+        version: 0.24.0
       microformats-parser:
         specifier: 2.0.2
         version: 2.0.2
@@ -321,8 +321,8 @@ importers:
         specifier: 6.9.16
         version: 6.9.16
       nsfwjs:
-        specifier: '3.0'
-        version: 3.0.0(@tensorflow/tfjs@4.4.0(encoding@0.1.13)(seedrandom@3.0.5))
+        specifier: 4.2.0
+        version: 4.2.0(@tensorflow/tfjs@4.4.0(encoding@0.1.13)(seedrandom@3.0.5))(buffer@6.0.3)
       oauth:
         specifier: 0.10.0
         version: 0.10.0
@@ -356,9 +356,6 @@ importers:
       pug:
         specifier: 3.0.3
         version: 3.0.3
-      punycode:
-        specifier: 2.3.1
-        version: 2.3.1
       qrcode:
         specifier: 1.5.4
         version: 1.5.4
@@ -610,9 +607,6 @@ importers:
       '@types/pug':
         specifier: 2.0.10
         version: 2.0.10
-      '@types/punycode':
-        specifier: 2.1.4
-        version: 2.1.4
       '@types/qrcode':
         specifier: 1.5.5
         version: 1.5.5
@@ -716,8 +710,8 @@ importers:
         specifier: 0.19.0
         version: 0.19.0
       '@tabler/icons-webfont':
-        specifier: 3.3.0
-        version: 3.3.0
+        specifier: https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz
+        version: https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz
       '@twemoji/parser':
         specifier: 15.1.1
         version: 15.1.1
@@ -728,8 +722,8 @@ importers:
         specifier: 3.5.12
         version: 3.5.12
       aiscript-vscode:
-        specifier: github:aiscript-dev/aiscript-vscode#v0.1.11
-        version: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9
+        specifier: github:aiscript-dev/aiscript-vscode#v0.1.15
+        version: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/c3cde89e79a41d93540cf8a48cd619c3f2dcb1b7
       astring:
         specifier: 1.9.0
         version: 1.9.0
@@ -808,7 +802,7 @@ importers:
       photoswipe:
         specifier: 5.4.4
         version: 5.4.4
-      punycode:
+      punycode.js:
         specifier: 2.3.1
         version: 2.3.1
       rollup:
@@ -938,9 +932,9 @@ importers:
       '@types/node':
         specifier: 22.9.0
         version: 22.9.0
-      '@types/punycode':
-        specifier: 2.1.4
-        version: 2.1.4
+      '@types/punycode.js':
+        specifier: npm:@types/punycode@2.1.4
+        version: '@types/punycode@2.1.4'
       '@types/sanitize-html':
         specifier: 2.13.0
         version: 2.13.0
@@ -1062,8 +1056,8 @@ importers:
         specifier: 5.1.3
         version: 5.1.3(rollup@4.26.0)
       '@tabler/icons-webfont':
-        specifier: 3.3.0
-        version: 3.3.0
+        specifier: https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz
+        version: https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz
       '@twemoji/parser':
         specifier: 15.1.1
         version: 15.1.1
@@ -1094,7 +1088,7 @@ importers:
       misskey-js:
         specifier: workspace:*
         version: link:../misskey-js
-      punycode:
+      punycode.js:
         specifier: 2.3.1
         version: 2.3.1
       rollup:
@@ -1143,9 +1137,9 @@ importers:
       '@types/node':
         specifier: 22.9.0
         version: 22.9.0
-      '@types/punycode':
-        specifier: 2.1.4
-        version: 2.1.4
+      '@types/punycode.js':
+        specifier: npm:@types/punycode@2.1.4
+        version: '@types/punycode@2.1.4'
       '@types/tinycolor2':
         specifier: 1.4.6
         version: 1.4.6
@@ -1240,6 +1234,9 @@ importers:
       eslint-plugin-vue:
         specifier: 9.31.0
         version: 9.31.0(eslint@9.14.0)
+      nodemon:
+        specifier: 3.1.7
+        version: 3.1.7
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -4167,11 +4164,12 @@ packages:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
 
-  '@tabler/icons-webfont@3.3.0':
-    resolution: {integrity: sha512-vMsxtwTXdC4QH4uDajZjBYThILEI0dP+Mn1s4XZkVtnJ793IF31i3596nYetWhAJnrED0UJ0HQWSbmqVxVQbxA==}
+  '@tabler/icons-webfont@https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz':
+    resolution: {tarball: https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz}
+    version: 3.29.0-mi.1913
 
-  '@tabler/icons@3.3.0':
-    resolution: {integrity: sha512-PLVe9d7b59sKytbx00KgeGhQG3N176Ezv8YMmsnSz4s0ifDzMWlp/h2wEfQZ0ZNe8e377GY2OW6kovUe3Rnd0g==}
+  '@tabler/icons@3.29.0':
+    resolution: {integrity: sha512-VWNINymdmhay3MDvWVREmRwuWLSrX3YiInKvs5L4AHRF4bAfJabLlEReE0BW/XFsBt22ff8/C8Eam/LXlF97mA==}
 
   '@tensorflow/tfjs-backend-cpu@4.4.0':
     resolution: {integrity: sha512-d4eln500/qNym78z9IrUUzF0ITBoJGLrxV8xd92kLVoXhg35Mm+zqUXShjFcrH8joOHOFuST0qZ0TbDDqcPzPA==}
@@ -4914,9 +4912,9 @@ packages:
     resolution: {integrity: sha512-gOsf2YwSlleG6IjRYG2A7k0HmBMEo6qVNk9Bp/EaLgAJT5ngH6PXbqa4ItvnEwCm/velL5jAnQgsHsWnjhGmvw==}
     engines: {node: '>=18'}
 
-  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
-    resolution: {tarball: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9}
-    version: 0.1.11
+  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/c3cde89e79a41d93540cf8a48cd619c3f2dcb1b7:
+    resolution: {tarball: https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/c3cde89e79a41d93540cf8a48cd619c3f2dcb1b7}
+    version: 0.1.15
     engines: {vscode: ^1.83.0}
 
   ajv-draft-04@1.0.0:
@@ -8321,10 +8319,11 @@ packages:
     resolution: {integrity: sha512-AqZtDUWOMKs1G/8lwylVjrdYgqA4d9nu8hc+0gzRxlDb1I10+FHBGMXs6aiQHFdCUUlqH99MUMuLfzWDNDtfxw==}
     deprecated: This package is no longer supported.
 
-  nsfwjs@3.0.0:
-    resolution: {integrity: sha512-A7si+H96Q4gbtjjtmfcS25JrNimnJMTs2e6kveTMo0M+ZrRfjDiCV9UxpKPpXRTyoI6A7PHrUGM4S3R3PbFpEQ==}
+  nsfwjs@4.2.0:
+    resolution: {integrity: sha512-8eMmV+Hfr3hqSX7PzDJx94kFSP4QiN4/G9+b92I3catgQuqOb9Qmns1nDyVI0jMcWc1sVWdqBIA6eYLvKkryxA==}
     peerDependencies:
       '@tensorflow/tfjs': ^4.0.0
+      buffer: ^6.0.3
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -9062,6 +9061,10 @@ packages:
 
   pump@3.0.2:
     resolution: {integrity: sha512-tUPXtzlGM8FE3P0ZL6DVs/3P58k9nk8/jZeQCurTJylQA8qFYzHFfhBJkuqyE0FifOsQ0uKWekiZ5g8wtr28cw==}
+
+  punycode.js@2.3.1:
+    resolution: {integrity: sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA==}
+    engines: {node: '>=6'}
 
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
@@ -10529,6 +10532,9 @@ packages:
 
   vue-component-type-helpers@2.1.10:
     resolution: {integrity: sha512-lfgdSLQKrUmADiSV6PbBvYgQ33KF3Ztv6gP85MfGaGaSGMTXORVaHT1EHfsqCgzRNBstPKYDmvAV9Do5CmJ07A==}
+
+  vue-component-type-helpers@2.2.2:
+    resolution: {integrity: sha512-6lLY+n2xz2kCYshl59mL6gy8OUUTmkscmDFMO8i7Lj+QKwgnIFUZmM1i/iTYObtrczZVdw7UakPqDTGwVSGaRg==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -14019,7 +14025,7 @@ snapshots:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.5.12(typescript@5.6.3)
-      vue-component-type-helpers: 2.1.10
+      vue-component-type-helpers: 2.2.2
 
   '@stylistic/eslint-plugin@2.9.0(eslint@9.14.0)(typescript@5.6.3)':
     dependencies:
@@ -14164,11 +14170,11 @@ snapshots:
     dependencies:
       defer-to-connect: 2.0.1
 
-  '@tabler/icons-webfont@3.3.0':
+  '@tabler/icons-webfont@https://github.com/misskey-dev/tabler-icons/archive/refs/tags/3.29.0-mi.1913+5921534bc.tar.gz':
     dependencies:
-      '@tabler/icons': 3.3.0
+      '@tabler/icons': 3.29.0
 
-  '@tabler/icons@3.3.0': {}
+  '@tabler/icons@3.29.0': {}
 
   '@tensorflow/tfjs-backend-cpu@4.4.0(@tensorflow/tfjs-core@4.4.0(encoding@0.1.13))':
     dependencies:
@@ -15141,7 +15147,7 @@ snapshots:
       clean-stack: 5.2.0
       indent-string: 5.0.0
 
-  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/e1e1b27f2f72cd28a473e004b6da0d8fc0bd40d9:
+  aiscript-vscode@https://codeload.github.com/aiscript-dev/aiscript-vscode/tar.gz/c3cde89e79a41d93540cf8a48cd619c3f2dcb1b7:
     dependencies:
       '@aiscript-dev/aiscript-languageserver': https://github.com/aiscript-dev/aiscript-languageserver/releases/download/0.1.6/aiscript-dev-aiscript-languageserver-0.1.6.tgz
       vscode-languageclient: 9.0.1
@@ -19464,9 +19470,10 @@ snapshots:
       set-blocking: 2.0.0
     optional: true
 
-  nsfwjs@3.0.0(@tensorflow/tfjs@4.4.0(encoding@0.1.13)(seedrandom@3.0.5)):
+  nsfwjs@4.2.0(@tensorflow/tfjs@4.4.0(encoding@0.1.13)(seedrandom@3.0.5))(buffer@6.0.3):
     dependencies:
       '@tensorflow/tfjs': 4.4.0(encoding@0.1.13)(seedrandom@3.0.5)
+      buffer: 6.0.3
 
   nth-check@2.1.1:
     dependencies:
@@ -20187,6 +20194,8 @@ snapshots:
     dependencies:
       end-of-stream: 1.4.4
       once: 1.4.0
+
+  punycode.js@2.3.1: {}
 
   punycode@2.3.1: {}
 
@@ -21766,6 +21775,8 @@ snapshots:
       typescript: 5.6.3
 
   vue-component-type-helpers@2.1.10: {}
+
+  vue-component-type-helpers@2.2.2: {}
 
   vue-demi@0.14.10(vue@3.5.12(typescript@5.6.3)):
     dependencies:

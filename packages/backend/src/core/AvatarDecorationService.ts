@@ -6,10 +6,8 @@
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { IsNull } from 'typeorm';
-import type {
-	AvatarDecorationsRepository, InstancesRepository, MiAvatarDecoration,
-	MiUser, UsersRepository,
-} from '@/models/_.js';
+import { UserDetailedNotMe } from 'misskey-js/entities.js';
+import type { AvatarDecorationsRepository, InstancesRepository, UsersRepository, MiAvatarDecoration, MiUser } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { DI } from '@/di-symbols.js';
@@ -17,9 +15,9 @@ import { bindThis } from '@/decorators.js';
 import { MemorySingleCache } from '@/misc/cache.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
+import { HttpRequestService } from '@/core/HttpRequestService.js';
 import { appendQuery, query } from '@/misc/prelude/url.js';
 import type { Config } from '@/config.js';
-import { HttpRequestService } from './HttpRequestService.js';
 
 @Injectable()
 export class AvatarDecorationService implements OnApplicationShutdown {
@@ -48,7 +46,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		private httpRequestService: HttpRequestService,
 	) {
 		this.cache = new MemorySingleCache<MiAvatarDecoration[]>(1000 * 60 * 30); // 30s
-		this.cacheWithRemote = new MemorySingleCache<MiAvatarDecoration[]>(1000 * 60 * 30); // 30s
+		this.cacheWithRemote = new MemorySingleCache<MiAvatarDecoration[]>(1000 * 60 * 30);
 
 		this.redisForSub.on('message', this.onMessage);
 	}
@@ -141,8 +139,8 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			body: JSON.stringify({ 'username': user.username }),
 		});
 
-		const userData = await res.json() as Partial<MiUser>;
-		const userAvatarDecorations = userData.avatarDecorations ?? undefined;
+		const userData = await res.json() as Partial<UserDetailedNotMe> | undefined;
+		const userAvatarDecorations = userData?.avatarDecorations;
 
 		if (!userAvatarDecorations || userAvatarDecorations.length === 0) {
 			const updates = {} as Partial<MiUser>;
@@ -158,45 +156,49 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({}),
 		});
-		const allDecorations = await allRes.json() as MiAvatarDecoration[];
-
+		const remoteDecorations = (await allRes.json() as Partial<MiAvatarDecoration[]> | undefined) ?? [];
 		const updates = {} as Partial<MiUser>;
 		updates.avatarDecorations = [];
-		for (const avatarDecoration of userAvatarDecorations) {
-			let name: string;
-			let description: string;
-			const avatarDecorationId = avatarDecoration.id;
-			for (const decoration of allDecorations) {
-				if (decoration.id === avatarDecorationId) {
-					name = decoration.name;
-					description = decoration.description;
+		for (const userAvatarDecoration of userAvatarDecorations) {
+			let name;
+			let description;
+			const userAvatarDecorationId = userAvatarDecoration.id;
+			for (const remoteDecoration of remoteDecorations) {
+				if (remoteDecoration?.id === userAvatarDecorationId) {
+					name = remoteDecoration.name;
+					description = remoteDecoration.description;
 					break;
 				}
 			}
 			const existingDecoration = await this.avatarDecorationsRepository.findOneBy({
 				host: userHost,
-				remoteId: avatarDecorationId,
+				remoteId: userAvatarDecorationId,
 			});
 			const decorationData = {
-				name: name!,
-				description: description!,
-				url: this.getProxiedUrl(avatarDecoration.url as string, 'static'),
-				remoteId: avatarDecorationId,
+				name: name,
+				description: description,
+				url: this.getProxiedUrl(userAvatarDecoration.url),
+				remoteId: userAvatarDecorationId,
 				host: userHost,
 			};
 			if (existingDecoration == null) {
 				await this.create(decorationData);
+				this.cacheWithRemote.delete();
 			} else {
 				await this.update(existingDecoration.id, decorationData);
+				this.cacheWithRemote.delete();
 			}
 			const findDecoration = await this.avatarDecorationsRepository.findOneBy({
 				host: userHost,
-				remoteId: avatarDecorationId,
+				remoteId: userAvatarDecorationId,
 			});
+
 			updates.avatarDecorations.push({
 				id: findDecoration?.id ?? '',
-				angle: avatarDecoration.angle ?? 0,
-				flipH: avatarDecoration.flipH ?? false,
+				angle: userAvatarDecoration.angle ?? 0,
+				flipH: userAvatarDecoration.flipH ?? false,
+				offsetX: userAvatarDecoration.offsetX ?? 0,
+				offsetY: userAvatarDecoration.offsetY ?? 0,
 			});
 		}
 		await this.usersRepository.update({ id: user.id }, updates);
@@ -226,7 +228,7 @@ export class AvatarDecorationService implements OnApplicationShutdown {
 		if (!withRemote) {
 			return this.cache.fetch(() => this.avatarDecorationsRepository.find({ where: { host: IsNull() } }));
 		} else {
-			return this.cache.fetch(() => this.avatarDecorationsRepository.find());
+			return this.cacheWithRemote.fetch(() => this.avatarDecorationsRepository.find());
 		}
 	}
 

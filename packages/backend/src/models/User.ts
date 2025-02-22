@@ -277,6 +277,7 @@ export class MiUser {
 	})
 	public token: string | null;
 
+	@Index()
 	@Column('boolean', {
 		default: false,
 	})

@@ -49,7 +49,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<FormSection v-if="instance.repositoryUrl !== 'https://github.com/misskey-dev/misskey'">
 					<div class="_gaps_s">
 						<MkInfo>
-							{{ i18n.tsx._aboutMisskey.thisIsModifiedVersion({ name: instance.name }) }}
+							{{ i18n.tsx._aboutMisskey.thisIsModifiedVersion({ name: (instance.name as string) }) }}
 						</MkInfo>
 						<FormLink v-if="instance.repositoryUrl" :to="instance.repositoryUrl" external>
 							<template #icon><i class="ti ti-code"></i></template>
@@ -63,6 +63,40 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkInfo v-if="!instance.repositoryUrl && !instance.providesTarball" warn>
 							{{ i18n.ts.sourceCodeIsNotYetProvided }}
 						</MkInfo>
+					</div>
+				</FormSection>
+				<FormSection>
+					<template #label>{{ i18n.ts._aboutMisskey.projectMembersNeko }}</template>
+					<div :class="$style.contributors">
+						<a href="/@staff" target="_blank" :class="$style.contributor">
+							<img src="https://nekoplanet.xyz/proxy/avatar.webp?url=https%3A%2F%2Fnekoplanet.xyz%2Ffiles%2Fwebpublic-e29cfa2f-6c35-458a-a909-7cfd8e5ef3e7&avatar=1" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@staff | {{ i18n.ts._aboutMisskey.officialContact }}</span>
+						</a>
+					</div>
+					<br>
+					<div :class="$style.contributors">
+						<a href="https://github.com/laonmofu" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/70682382?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@laonmofu</span>
+						</a>
+					</div>
+					<div :class="$style.contributors">
+						<a href="https://github.com/yupi97" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/171706667?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@yupi97</span>
+						</a>
+					</div>
+					<div :class="$style.contributors">
+						<a href="https://github.com/seojangho" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/8655816?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@seojangho</span>
+						</a>
+					</div>
+					<div :class="$style.contributors">
+						<a href="https://github.com/HotoRas" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/34373595?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@HotoRas</span>
+						</a>
 					</div>
 				</FormSection>
 				<FormSection>
@@ -275,6 +309,9 @@ const patronsWithIcon = [{
 }, {
 	name: '秋瀬カヲル',
 	icon: 'https://assets.misskey-hub.net/patrons/0f22aeb866484f4fa51db6721e3f9847.jpg',
+}, {
+	name: '新井　治',
+	icon: 'https://assets.misskey-hub.net/patrons/d160876f20394674a17963a0e609600a.jpg',
 }];
 
 const patrons = [
@@ -384,6 +421,7 @@ const patrons = [
 	'こまつぶり',
 	'まゆつな空高',
 	'asata',
+	'ruru',
 ];
 
 const thereIsTreasure = ref($i && !claimedAchievements.includes('foundTreasure'));
@@ -399,6 +437,7 @@ const easterEggEngine = ref<{ stop: () => void } | null>(null);
 const containerEl = shallowRef<HTMLElement>();
 
 function iconLoaded() {
+	if(!containerEl.value) return;
 	const emojis = defaultStore.state.reactions;
 	const containerWidth = containerEl.value.offsetWidth;
 	for (let i = 0; i < 32; i++) {
@@ -416,7 +455,7 @@ function iconLoaded() {
 }
 
 function gravity() {
-	if (!easterEggReady) return;
+	if (!easterEggReady) return; if (!containerEl.value) return;
 	easterEggReady = false;
 	easterEggEngine.value = physics(containerEl.value);
 }
@@ -542,6 +581,24 @@ definePageMetadata(() => ({
 	align-items: center;
 	padding: 12px;
 	background: var(--MI_THEME-buttonBg);
+	border-radius: 6px;
+
+	&:hover {
+		text-decoration: none;
+		background: var(--MI_THEME-buttonHoverBg);
+	}
+
+	&.active {
+		color: var(--MI_THEME-accent);
+		background: var(--MI_THEME-buttonHoverBg);
+	}
+}
+
+.contributorStaff {
+	display: flex;
+	align-items: center;
+	padding: 12px;
+	background: var(--MI_THEME-panel);
 	border-radius: 6px;
 
 	&:hover {

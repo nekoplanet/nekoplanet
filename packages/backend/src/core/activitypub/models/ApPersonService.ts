@@ -39,7 +39,10 @@ import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.j
 import type { AccountMoveService } from '@/core/AccountMoveService.js';
 import { checkHttps } from '@/misc/check-https.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
-import * as APTypes from '../type.js';
+import {
+	isActor, getOneApHrefNullable, isPropertyValue, isCollection,
+	getApId, getApType, isCollectionOrOrderedCollection,
+} from '../type.js';
 import { extractApHashtags } from './tag.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { ApNoteService } from './ApNoteService.js';
@@ -48,6 +51,7 @@ import type { ApResolverService, Resolver } from '../ApResolverService.js';
 import type { ApLoggerService } from '../ApLoggerService.js';
 
 import type { ApImageService } from './ApImageService.js';
+import type { IActor, ICollection, IObject, IOrderedCollection } from '../type.js';
 
 const nameLength = 128;
 const summaryLength = 2048;
@@ -137,10 +141,10 @@ export class ApPersonService implements OnModuleInit {
 	 * @param uri Fetch target URI
 	 */
 	@bindThis
-	private validateActor(x: APTypes.IObject, uri: string): APTypes.IActor {
+	private validateActor(x: IObject, uri: string): IActor {
 		const expectHost = this.utilityService.punyHost(uri);
 
-		if (!APTypes.isActor(x)) {
+		if (!isActor(x)) {
 			throw new Error(`invalid Actor type '${x.type}'`);
 		}
 
@@ -158,16 +162,20 @@ export class ApPersonService implements OnModuleInit {
 
 		const sharedInboxObject = x.sharedInbox ?? (x.endpoints ? x.endpoints.sharedInbox : undefined);
 		if (sharedInboxObject != null) {
-			const sharedInbox = APTypes.getApId(sharedInboxObject);
-			if (!(typeof sharedInbox === 'string' && sharedInbox.length > 0 && this.utilityService.punyHost(sharedInbox) === expectHost)) {
-				throw new Error('invalid Actor: wrong shared inbox');
+			const sharedInbox = getApId(sharedInboxObject);
+			if (!(typeof sharedInbox === 'string' && sharedInbox.length > 0 && new URL(sharedInbox).host === expectHost)) {
+				this.logger.warn(`invalid Actor: skipping wrong shared inbox, expected host: ${expectHost}, actual URL: ${sharedInbox}`);
+				x.sharedInbox = undefined;
+				if (x.endpoints?.sharedInbox) {
+					x.endpoints.sharedInbox = undefined;
+				}
 			}
 		}
 
-		for (const collection of ['outbox', 'followers', 'following'] as (keyof APTypes.IActor)[]) {
-			const xCollection = (x as APTypes.IActor)[collection];
+		for (const collection of ['outbox', 'followers', 'following'] as (keyof IActor)[]) {
+			const xCollection = (x as IActor)[collection];
 			if (xCollection != null) {
-				const collectionUri = APTypes.getApId(xCollection);
+				const collectionUri = getApId(xCollection);
 				if (typeof collectionUri === 'string' && collectionUri.length > 0) {
 					if (this.utilityService.punyHost(collectionUri) !== expectHost) {
 						throw new Error(`invalid Actor: ${collection} has different host`);
@@ -259,7 +267,7 @@ export class ApPersonService implements OnModuleInit {
 			if (Array.isArray(img)) {
 				img = img.find(item => item && item.url) ?? null;
 			}
-			
+
 			// if we have an explicitly missing image, return an
 			// explicitly-null set of values
 			if ((img == null) || (typeof img === 'object' && img.url == null)) {
@@ -321,7 +329,7 @@ export class ApPersonService implements OnModuleInit {
 
 		const tags = extractApHashtags(person.tag).map(normalizeForSearch).splice(0, 32);
 
-		const isBot = APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application';
+		const isBot = getApType(object) === 'Service' || getApType(object) === 'Application';
 
 		const [followingVisibility, followersVisibility] = await Promise.all(
 			[
@@ -340,20 +348,14 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = APTypes.getOneApHrefNullable(person.url);
+		const url = getOneApHrefNullable(person.url);
 
 		if (person.id == null) {
 			throw new Error('Refusing to create person without id');
 		}
 
-		if (url != null) {
-			if (!checkHttps(url)) {
-				throw new Error('unexpected schema of person url: ' + url);
-			}
-
-			if (this.utilityService.punyHost(url) !== this.utilityService.punyHost(person.id)) {
-				throw new Error(`person url <> uri host mismatch: ${url} <> ${person.id}`);
-			}
+		if (url && !checkHttps(url)) {
+			throw new Error('unexpected schema of person url: ' + url);
 		}
 
 		// Create user
@@ -388,8 +390,8 @@ export class ApPersonService implements OnModuleInit {
 					host,
 					inbox: person.inbox,
 					sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null,
-					followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
-					featured: person.featured ? APTypes.getApId(person.featured) : undefined,
+					followersUri: person.followers ? getApId(person.followers) : undefined,
+					featured: person.featured ? getApId(person.featured) : undefined,
 					uri: person.id,
 					tags,
 					isBot,
@@ -428,6 +430,7 @@ export class ApPersonService implements OnModuleInit {
 						keyPem: person.publicKey.publicKeyPem,
 					}));
 				}
+				await this.updateFollowCount(person);
 			});
 		} catch (e) {
 			// duplicate key error
@@ -495,7 +498,7 @@ export class ApPersonService implements OnModuleInit {
 	 * @param movePreventUris ここに指定されたURIがPersonのmovedToに指定されていたり10回より多く回っている場合これ以上アカウント移行を行わない（無限ループ防止）
 	 */
 	@bindThis
-	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: APTypes.IObject, movePreventUris: string[] = []): Promise<string | void> {
+	public async updatePerson(uri: string, resolver?: Resolver | null, hint?: IObject, movePreventUris: string[] = []): Promise<string | void> {
 		if (typeof uri !== 'string') throw new Error('uri is not string');
 
 		// URIがこのサーバーを指しているならスキップ
@@ -546,7 +549,7 @@ export class ApPersonService implements OnModuleInit {
 
 		const bday = person['vcard:bday']?.match(/^\d{4}-\d{2}-\d{2}/);
 
-		const url = APTypes.getOneApHrefNullable(person.url);
+		const url = getOneApHrefNullable(person.url);
 
 		if (person.id == null) {
 			throw new Error('Refusing to update person without id');
@@ -566,14 +569,14 @@ export class ApPersonService implements OnModuleInit {
 			lastFetchedAt: new Date(),
 			inbox: person.inbox,
 			sharedInbox: person.sharedInbox ?? person.endpoints?.sharedInbox ?? null,
-			followersUri: person.followers ? APTypes.getApId(person.followers) : undefined,
+			followersUri: person.followers ? getApId(person.followers) : undefined,
 			featured: person.featured,
 			emojis: emojiNames,
 			name: truncate(person.name, nameLength),
 			tags,
 			approved: true,
-			isBot: APTypes.getApType(object) === 'Service' || APTypes.getApType(object) === 'Application',
-			isCat: (person as Partial<MiRemoteUser>).isCat === true,
+			isBot: getApType(object) === 'Service' || getApType(object) === 'Application',
+			isCat: (person as any).isCat === true,
 			isLocked: person.manuallyApprovesFollowers,
 			movedToUri: person.movedTo ?? null,
 			alsoKnownAs: person.alsoKnownAs ?? null,
@@ -631,6 +634,8 @@ export class ApPersonService implements OnModuleInit {
 			birthday: bday?.[0] ?? null,
 			location: person['vcard:Address'] ?? null,
 		});
+
+		await this.updateFollowCount(person);
 
 		this.globalEventService.publishInternalEvent('remoteUserUpdated', { id: exist.id });
 
@@ -692,11 +697,11 @@ export class ApPersonService implements OnModuleInit {
 
 	@bindThis
 	// TODO: `attachments`が`IObject`だった場合、返り値が`[]`になるようだが構わないのか？
-	public analyzeAttachments(attachments: APTypes.IObject | APTypes.IObject[] | undefined): Field[] {
+	public analyzeAttachments(attachments: IObject | IObject[] | undefined): Field[] {
 		const fields: Field[] = [];
 
 		if (Array.isArray(attachments)) {
-			for (const attachment of attachments.filter(APTypes.isPropertyValue)) {
+			for (const attachment of attachments.filter(isPropertyValue)) {
 				fields.push({
 					name: attachment.name,
 					value: this.mfmService.fromHtml(attachment.value),
@@ -719,16 +724,16 @@ export class ApPersonService implements OnModuleInit {
 
 		// Resolve to (Ordered)Collection Object
 		const collection = await _resolver.resolveCollection(user.featured);
-		if (!APTypes.isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
+		if (!isCollectionOrOrderedCollection(collection)) throw new Error('Object is not Collection or OrderedCollection');
 
 		// Resolve to Object(may be Note) arrays
-		const unresolvedItems = APTypes.isCollection(collection) ? collection.items : collection.orderedItems;
+		const unresolvedItems = isCollection(collection) ? collection.items : collection.orderedItems;
 		const items = await Promise.all(toArray(unresolvedItems).map(x => _resolver.resolve(x)));
 
 		// Resolve and regist Notes
 		const limit = promiseLimit<MiNote | null>(2);
 		const featuredNotes = await Promise.all(items
-			.filter(item => APTypes.getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
+			.filter(item => getApType(item) === 'Note')	// TODO: Noteでなくてもいいかも
 			.slice(0, 5)
 			.map(item => limit(() => this.apNoteService.resolveNote(item, {
 				resolver: _resolver,
@@ -800,11 +805,61 @@ export class ApPersonService implements OnModuleInit {
 		return 'ok';
 	}
 
+	/** 
+	* Update Remote user's Following/Followers count 
+	* If it is private, set it to -1.
+	*/
 	@bindThis
-	private async isPublicCollection(collection: string | APTypes.ICollection | APTypes.IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
+	private async updateFollowCount(person: IActor) {
+		const resolver = this.apResolverService.createResolver();
+
+		const uri = person.id;
+		if (!uri) return;
+
+		if (person.following) {
+			try {
+				const collection = typeof person.following === 'string' ? await resolver.resolveCollection(person.following) : person.following;
+				const followingCount = collection.totalItems;
+				this.logger.info(`Update followingCount ${followingCount} (user: ${uri})`);
+				const update: Partial<MiUser> = { followingCount: followingCount };
+				await this.usersRepository.update({ uri: uri }, update);
+			} catch (err) {
+				if (!(err instanceof StatusError) || err.isRetryable) {
+					this.logger.error('error occurred while fetching following/followers collection', { stack: err });
+					// Do not update the count on transient errors.
+				} else {
+					this.logger.info(`Update followingCount ${-1} (user: ${uri})`);
+					const update: Partial<MiUser> = { followingCount: -1 };
+					await this.usersRepository.update({ uri: uri }, update);
+				}
+			}
+		}
+
+		if (person.followers) {
+			try {
+				const collection = typeof person.followers === 'string' ? await resolver.resolveCollection(person.followers) : person.followers;
+				const followersCount = collection.totalItems;
+				this.logger.info(`Update followersCount to ${followersCount} (user: ${uri})`);
+				const update: Partial<MiUser> = { followersCount: followersCount };
+				await this.usersRepository.update({ uri: uri }, update);
+			} catch (err) {
+				if (!(err instanceof StatusError) || err.isRetryable) {
+					this.logger.error('error occurred while fetching following/followers collection', { stack: err });
+					// Do not update the count on transient errors.
+				} else {
+					this.logger.info(`Update followersCount to ${-1} (user: ${uri})`);
+					const update: Partial<MiUser> = { followersCount: -1 };
+					await this.usersRepository.update({ uri: uri }, update);
+				}
+			}
+		}
+	}
+	
+	@bindThis
+	private async isPublicCollection(collection: string | ICollection | IOrderedCollection | undefined, resolver: Resolver): Promise<boolean> {
 		if (collection) {
 			const resolved = await resolver.resolveCollection(collection);
-			if (resolved.first || (resolved as APTypes.ICollection).items || (resolved as APTypes.IOrderedCollection).orderedItems) {
+			if (resolved.first || (resolved as ICollection).items || (resolved as IOrderedCollection).orderedItems) {
 				return true;
 			}
 		}

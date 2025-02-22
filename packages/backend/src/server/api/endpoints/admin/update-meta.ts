@@ -119,6 +119,7 @@ export const paramDef = {
 		objectStorageBaseUrl: { type: 'string', nullable: true },
 		objectStorageBucket: { type: 'string', nullable: true },
 		objectStoragePrefix: { type: 'string', nullable: true },
+		objectStoragePrefixForRemote: { type: 'string', nullable: true },
 		objectStorageEndpoint: { type: 'string', nullable: true },
 		objectStorageRegion: { type: 'string', nullable: true },
 		objectStoragePort: { type: 'integer', nullable: true },
@@ -128,6 +129,7 @@ export const paramDef = {
 		objectStorageUseProxy: { type: 'boolean' },
 		objectStorageSetPublicRead: { type: 'boolean' },
 		objectStorageS3ForcePathStyle: { type: 'boolean' },
+		objectStorageCacheDays: { type: 'integer', nullable: true },
 		enableIpLogging: { type: 'boolean' },
 		enableActiveEmailValidation: { type: 'boolean' },
 		enableVerifymailApi: { type: 'boolean' },
@@ -488,6 +490,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.objectStoragePrefix = ps.objectStoragePrefix;
 			}
 
+			if (ps.objectStoragePrefixForRemote !== undefined) {
+				set.objectStoragePrefixForRemote = ps.objectStoragePrefixForRemote;
+			}
+
 			if (ps.objectStorageEndpoint !== undefined) {
 				set.objectStorageEndpoint = ps.objectStorageEndpoint;
 			}
@@ -522,6 +528,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.objectStorageS3ForcePathStyle !== undefined) {
 				set.objectStorageS3ForcePathStyle = ps.objectStorageS3ForcePathStyle;
+			}
+
+			if (ps.objectStorageCacheDays !== undefined) {
+				set.objectStorageCacheDays = ps.objectStorageCacheDays;
 			}
 
 			if (ps.deeplAuthKey !== undefined) {
